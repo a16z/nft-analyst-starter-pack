@@ -10,8 +10,7 @@ You will first need to obtain an Alchemy API key. You can sign up for a free acc
 
 Then, install the dependencies.
 
-`pip3 install -r requirements.txt` or
-`poetry install`
+`poetry install` or `pip3 install -r requirements.txt`
 
 ## Export Data
 
@@ -22,6 +21,17 @@ python export_data.py --alchemy-api-key YourAPIKey --contract-address 0xED5AF388
 ```
 
 The first argument is your Alchemy API key and the second argument is the contract address of the NFT collection you want to export (the example provided is Azuki).
+
+### End-to-End Example
+
+```bash
+export ALCHEMY_API_KEY=put_your_api_key_here
+git clone https://github.com/a16z/nft-analyst-starter-pack && cd nft-analyst-starter-pack
+poetry env use python3.9
+poetry install
+poetry shell
+python export_data.py --alchemy-api-key $ALCHEMY_API_KEY --contract-address 0xED5AF388653567Af2F388E6224dC7C4b3241C544
+```
 
 ## Outputs
 
