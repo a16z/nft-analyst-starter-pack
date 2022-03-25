@@ -33,7 +33,9 @@ def generate_sales_output(
     ]
 
     # Filter for topic0 equal to the kecakk-256 hash of OrdersMatched(bytes32,bytes32,address,address,uint256,bytes32)
-    event_signature_hash = "0xc4109843e0b7d514e4c093114b863f8e7d8d9a458c372cd51bfe526b588006c9"
+    event_signature_hash = (
+        "0xc4109843e0b7d514e4c093114b863f8e7d8d9a458c372cd51bfe526b588006c9"
+    )
     logs_df = logs_df.loc[logs_df["topics"].str[:66] == event_signature_hash]
 
     # Extract maker and taker addresses from event log topics
@@ -95,7 +97,7 @@ def generate_sales_output(
         "sale_price_usd",
     ]
 
-    # Seller must be either the maker or taker; this addresses issues with aggregators 
+    # Seller must be either the maker or taker; this addresses issues with aggregators
     sales_df = sales_df.loc[
         (sales_df["seller"] == sales_df["maker"])
         | (sales_df["seller"] == sales_df["taker"])

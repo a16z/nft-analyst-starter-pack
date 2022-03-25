@@ -116,7 +116,7 @@ def generate_metadata_output(raw_attributes_file, token_ids_file, output):
         [col for col in nft_df.columns if col.endswith("_rarity_score")]
     ].sum(axis=1)
 
-    # Clean up dataframe for output    
+    # Clean up dataframe for output
     for name in distinct_trait_types:
         nft_df.drop(columns=[name], axis=1, inplace=True)
     nft_df = nft_df.drop_duplicates(subset=["asset_id"])
