@@ -2,6 +2,7 @@ import csv
 
 
 def extract_unique_column_value(input_filename, output_filename, column):
+    # Extract unique values from a column in a CSV file
     with open(input_filename, "r") as input_file, open(
         output_filename, "w"
     ) as output_file:

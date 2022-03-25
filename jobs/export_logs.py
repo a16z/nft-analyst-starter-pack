@@ -19,6 +19,7 @@ def export_logs(
     output,
 ):
     print("Exporting logs...")
+    # Export event logs using Ethereum ETL script
     with open(tx_hashes_filename, "r") as transaction_hashes_file:
         job = ExportReceiptsJob(
             transaction_hashes_iterable=(
