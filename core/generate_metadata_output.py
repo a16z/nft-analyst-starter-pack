@@ -5,13 +5,15 @@ import pandas as pd
 
 
 def generate_metadata_output(raw_attributes_file, token_ids_file, output):
-    # Calculate statistical rarity across attribute count, traits, and categories
+    # Read from raw attributes file and drop nulls
     raw_attributes = pd.read_csv(raw_attributes_file)
     raw_attributes = raw_attributes[raw_attributes["trait_type"].notnull()]
 
+    # Read from token ids file
     token_ids = open(token_ids_file).readlines()
     num_tokens = len(token_ids)
 
+    # Determine the attribute count of each item and calculate rarity
     attribute_count = (
         raw_attributes.groupby("asset_id").size().reset_index(name="attribute_count")
     )
@@ -24,6 +26,7 @@ def generate_metadata_output(raw_attributes_file, token_ids_file, output):
         attribute_count_rarity["count_rarity"] / (num_tokens)
     )
 
+    # Determine the trait for each category and calculate rarity
     trait_rarity = (
         raw_attributes.groupby(["trait_type", "value"])
         .size()
@@ -33,6 +36,7 @@ def generate_metadata_output(raw_attributes_file, token_ids_file, output):
         trait_rarity["trait_rarity"] / (num_tokens)
     )
 
+    # Calculate the rarity of having (or not having) a trait within each category
     category_rarity = (
         trait_rarity[["trait_type", "value", "trait_rarity"]]
         .groupby("trait_type")
@@ -43,7 +47,7 @@ def generate_metadata_output(raw_attributes_file, token_ids_file, output):
         ((num_tokens) - category_rarity["trait_rarity"]) / (num_tokens)
     )
 
-    # Construct traits dataframe and export to CSV
+    # Join and transpose trait data
     categories = raw_attributes[["asset_id", "value", "trait_type"]]
     categories = categories.merge(
         trait_rarity[["trait_type", "value", "trait_rarity_score"]],
@@ -57,6 +61,7 @@ def generate_metadata_output(raw_attributes_file, token_ids_file, output):
         how="left",
     )
 
+    # Replace spaces and parenthesis in category names
     categories["trait_type"] = categories["trait_type"].str.replace(
         " ", "_", regex=True
     )
@@ -72,8 +77,10 @@ def generate_metadata_output(raw_attributes_file, token_ids_file, output):
         ")", "", regex=True
     )
 
+    # Drop duplicate categories
     distinct_trait_types = categories["trait_type"].unique()
 
+    # Generate new columns for each trait category
     df_dict = {}
     for name in distinct_trait_types:
         df_dict[name] = pd.DataFrame()
@@ -104,13 +111,15 @@ def generate_metadata_output(raw_attributes_file, token_ids_file, output):
             ].iloc[0]
         )
 
+    # Calculate overall rarity score as the sum of the individual trait rarity scores
     nft_df["overall_rarity_score"] = nft_df[
         [col for col in nft_df.columns if col.endswith("_rarity_score")]
     ].sum(axis=1)
 
+    # Clean up dataframe for output
     for name in distinct_trait_types:
         nft_df.drop(columns=[name], axis=1, inplace=True)
-
     nft_df = nft_df.drop_duplicates(subset=["asset_id"])
 
+    # Output metadata to CSV file
     nft_df.to_csv(output, index=False)

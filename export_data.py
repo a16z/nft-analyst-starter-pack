@@ -1,5 +1,6 @@
 import sys
 
+# Check for Python version <= 3.10
 if sys.version_info[0] == 3 and sys.version_info[1] >= 10:
     raise Exception("Python >=3.10 is not supported at this time.")
 
@@ -30,6 +31,7 @@ from utils.extract_unique_column_value import extract_unique_column_value
 from utils.find_deployment_block_for_contract import find_deployment_block_for_contract
 
 
+# Set click CLI parameters
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
 @click.option(
     "-a",
@@ -74,6 +76,7 @@ def export_data(contract_address, alchemy_api_key):
     yesterday = datetime.today() - timedelta(days=1)
     _, end_block = eth_service.get_block_range_for_date(yesterday)
 
+    # Create tempfiles
     with tempfile.NamedTemporaryFile(
         delete=False
     ) as logs_csv, tempfile.NamedTemporaryFile(
@@ -95,7 +98,7 @@ def export_data(contract_address, alchemy_api_key):
             output=transfers_csv,
         )
 
-        # Extract staging files
+        # Create staging files
         extract_unique_column_value(
             input_filename=transfers_csv,
             output_filename=transaction_hashes_txt.name,
@@ -136,14 +139,14 @@ def export_data(contract_address, alchemy_api_key):
             output=sales_csv,
         )
 
-        # Generate sales output
+        # Generate transfers output
         generate_transfers_output(
             transfers_file=transfers_csv,
             date_block_mapping_file=date_block_mapping_csv,
             output=transfers_csv,
         )
 
-        # Get metadata for collection
+        # Fetch metadata
         get_metadata_for_collection(
             api_key=alchemy_api_key,
             contract_address=contract_address,

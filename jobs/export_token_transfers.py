@@ -14,6 +14,7 @@ def export_token_transfers(
     start_block, end_block, batch_size, provider_uri, max_workers, tokens, output
 ):
     print("Exporting token transfers...")
+    # Export token transfers using Ethereum ETL script
     job = ExportTokenTransfersJob(
         start_block=start_block,
         end_block=end_block,
