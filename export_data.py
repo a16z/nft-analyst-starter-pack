@@ -73,6 +73,11 @@ def export_data(contract_address, alchemy_api_key):
 
     # Get block range
     start_block = find_deployment_block_for_contract(contract_address, web3)
+    print(
+        "Contract {} appears to have been deployed at block {}".format(
+            contract_address, start_block
+        )
+    )
     yesterday = datetime.today() - timedelta(days=1)
     _, end_block = eth_service.get_block_range_for_date(yesterday)
 
