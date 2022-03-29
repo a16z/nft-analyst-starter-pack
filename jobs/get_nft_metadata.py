@@ -138,13 +138,18 @@ def get_metadata_for_collection(api_key, contract_address, output):
 
                 nft_list = j["nfts"]
                 for nft in nft_list:
-                    attributes_raw = nft["metadata"]["attributes"]
-                    attributes_df = pd.DataFrame(attributes_raw)
-                    attributes_df["asset_id"] = int(nft["id"]["tokenId"], 16)
-                    attributes_df = attributes_df[["value", "trait_type", "asset_id"]]
-                    raw_attributes = raw_attributes.append(
-                        attributes_df, ignore_index=True
-                    )
+                    try:
+                        attributes_raw = nft["metadata"]["attributes"]
+                        attributes_df = pd.DataFrame(attributes_raw)
+                        attributes_df["asset_id"] = int(nft["id"]["tokenId"], 16)
+                        attributes_df = attributes_df[
+                            ["value", "trait_type", "asset_id"]
+                        ]
+                        raw_attributes = raw_attributes.append(
+                            attributes_df, ignore_index=True
+                        )
+                    except:
+                        continue
 
                 try:
                     start_token = int(j["nextToken"], 16)

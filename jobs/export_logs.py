@@ -36,5 +36,3 @@ def export_logs(
         )
 
         job.run()
-
-    logs = pd.read_csv(output)
