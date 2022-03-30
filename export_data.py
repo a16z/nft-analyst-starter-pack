@@ -178,7 +178,7 @@ def export_data(contract_address, alchemy_api_key):
             output=metadata_csv,
         )
 
-        print("Data exported to sales.csv and metadata.csv")
+        print("Data exported to transfers.csv, sales.csv and metadata.csv")
 
 
 if __name__ == "__main__":
