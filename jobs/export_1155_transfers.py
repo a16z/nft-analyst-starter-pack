@@ -84,14 +84,13 @@ def export_1155_transfers(
         except:  # Too many results, decrease batch size
             last_block = int(round(first_block + (last_block - first_block) / 2))
 
-
     # Batch Transfers (ERC-1155)
     # Filter for topic0 equal to the kecakk-256 hash of TransferBatch(address,address,address,uint256,uint256)
     event_signature_hash = (
         "0x4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb"
     )
 
-    #Reset block range
+    # Reset block range
     first_block = start_block
     last_block = end_block
 
@@ -114,14 +113,22 @@ def export_1155_transfers(
                 # Count the number of token IDs transferred
                 count_of_ids = int(event["data"][131:194], 16)
 
-                for i in range(1, count_of_ids+1):
+                for i in range(1, count_of_ids + 1):
                     # Find position of each token ID and the number transferred in event data
-                    value_start = 2 + 192 + (64*(i-1)) + 1 
-                    num_tokens_start =  value_start + 64 + (64*(count_of_ids-i)) + 64 + (64*(i-1))
+                    value_start = 2 + 192 + (64 * (i - 1)) + 1
+                    num_tokens_start = (
+                        value_start
+                        + 64
+                        + (64 * (count_of_ids - i))
+                        + 64
+                        + (64 * (i - 1))
+                    )
 
                     # Assign values for each field
-                    value = int(event["data"][value_start:value_start+63], 16)
-                    num_tokens = int(event["data"][num_tokens_start:num_tokens_start+63], 16)
+                    value = int(event["data"][value_start : value_start + 63], 16)
+                    num_tokens = int(
+                        event["data"][num_tokens_start : num_tokens_start + 63], 16
+                    )
                     from_address = "0x" + Web3.toHex(event["topics"][2])[-40:]
                     to_address = "0x" + Web3.toHex(event["topics"][3])[-40:]
                     transaction_hash = Web3.toHex(event["transactionHash"])
