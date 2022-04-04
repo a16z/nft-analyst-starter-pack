@@ -7,9 +7,25 @@ def generate_sales_output(
 ):
     # Read from transfers file and extract relevant columns
     transfers_df = pd.read_csv(transfers_file)
-    transfers_df = transfers_df[
-        ["transaction_hash", "block_number", "from_address", "to_address", "value"]
-    ]
+
+    if (
+        "num_tokens" in transfers_df.columns
+    ):  # ERC-1555 transfers; include num_tokens field
+        transfers_df = transfers_df[
+            [
+                "transaction_hash",
+                "block_number",
+                "from_address",
+                "to_address",
+                "value",
+                "num_tokens",
+            ]
+        ]
+
+    else:  # ERC-721 transfers; exclude num_tokens field
+        transfers_df = transfers_df[
+            ["transaction_hash", "block_number", "from_address", "to_address", "value"]
+        ]
 
     # Drop mints and burns from dataset
     transfers_df = transfers_df.loc[
@@ -70,32 +86,62 @@ def generate_sales_output(
     sales_df["sale_price_usd"] = sales_df["sale_price_eth"] * sales_df["price_of_eth"]
 
     # Clean up dataframe for output
-    sales_df = sales_df[
-        [
+    if "num_tokens" in sales_df.columns:  # ERC-1555 transfers; include num_tokens field
+        sales_df = sales_df[
+            [
+                "transaction_hash",
+                "block_number",
+                "date",
+                "value",
+                "from_address",
+                "to_address",
+                "maker",
+                "taker",
+                "sale_price_eth",
+                "sale_price_usd",
+                "num_tokens",
+            ]
+        ]
+        sales_df.columns = [
             "transaction_hash",
             "block_number",
             "date",
-            "value",
-            "from_address",
-            "to_address",
+            "asset_id",
+            "seller",
+            "buyer",
+            "maker",
+            "taker",
+            "sale_price_eth",
+            "sale_price_usd",
+            "tokens_sold",
+        ]
+    else:  # ERC-721 transfers; exclude num_tokens field
+        sales_df = sales_df[
+            [
+                "transaction_hash",
+                "block_number",
+                "date",
+                "value",
+                "from_address",
+                "to_address",
+                "maker",
+                "taker",
+                "sale_price_eth",
+                "sale_price_usd",
+            ]
+        ]
+        sales_df.columns = [
+            "transaction_hash",
+            "block_number",
+            "date",
+            "asset_id",
+            "seller",
+            "buyer",
             "maker",
             "taker",
             "sale_price_eth",
             "sale_price_usd",
         ]
-    ]
-    sales_df.columns = [
-        "transaction_hash",
-        "block_number",
-        "date",
-        "asset_id",
-        "seller",
-        "buyer",
-        "maker",
-        "taker",
-        "sale_price_eth",
-        "sale_price_usd",
-    ]
 
     # Seller must be either the maker or taker; this addresses issues with aggregators
     sales_df = sales_df.loc[

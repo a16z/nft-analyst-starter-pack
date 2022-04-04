@@ -23,6 +23,7 @@ from core.generate_sales_output import generate_sales_output
 from core.generate_transfers_output import generate_transfers_output
 from jobs.export_logs import export_logs
 from jobs.export_token_transfers import export_token_transfers
+from jobs.export_1155_transfers import export_1155_transfers
 from jobs.get_nft_metadata import get_metadata_for_collection
 from jobs.update_block_to_date_mapping import update_block_to_date_mapping
 from jobs.update_eth_prices import update_eth_prices
@@ -103,6 +104,22 @@ def export_data(contract_address, alchemy_api_key):
             output=transfers_csv,
         )
 
+        # If there are no 721 transfers, export 1155 transfers
+        if os.stat(transfers_csv).st_size == 0:
+            print(
+                "No ERC-721 transfers were identified.",
+                "Therefore, searching for and extracting any ERC-1155 transfers.",
+            )
+            export_1155_transfers(
+                start_block=start_block,
+                end_block=end_block,
+                batch_size=ethereum_etl_batch_size,
+                provider_uri=provider_uri,
+                max_workers=ethereum_etl_max_workers,
+                tokens=contract_address,
+                output=transfers_csv,
+            )
+
         # Create staging files
         extract_unique_column_value(
             input_filename=transfers_csv,
@@ -165,7 +182,7 @@ def export_data(contract_address, alchemy_api_key):
             output=metadata_csv,
         )
 
-        print("Data exported to sales.csv and metadata.csv")
+        print("Data exported to transfers.csv, sales.csv and metadata.csv")
 
 
 if __name__ == "__main__":

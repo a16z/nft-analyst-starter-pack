@@ -25,4 +25,3 @@ def export_token_transfers(
         tokens=tokens,
     )
     job.run()
-    token_transfers = pd.read_csv(output)
