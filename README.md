@@ -14,7 +14,7 @@ Then, install the dependencies.
 
 ## Export Data
 
-If you're using poetry, remember to prepend this command with `poetry run` or activate the appropriate environment with `poetry shell` while in the `nft-analyst-starter-pack` directory. You can learn more about poetry [here](https://python-poetry.org/docs/).
+If you're using poetry, remember to prepend this command with `poetry run` or activate the appropriate environment with `poetry shell` while in the `nft-analyst-starter-pack` directory. You can learn more about poetry and how to properly install it [here](https://python-poetry.org/docs/).
 
 ```bash
 python export_data.py --alchemy-api-key YourAPIKey --contract-address 0xED5AF388653567Af2F388E6224dC7C4b3241C544
