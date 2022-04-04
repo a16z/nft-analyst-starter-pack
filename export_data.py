@@ -106,6 +106,10 @@ def export_data(contract_address, alchemy_api_key):
 
         # If there are no 721 transfers, export 1155 transfers
         if os.stat(transfers_csv).st_size == 0:
+            print(
+                "No ERC-721 transfers were identified.",
+                "Therefore, searching for and extracting any ERC-1155 transfers.",
+            )
             export_1155_transfers(
                 start_block=start_block,
                 end_block=end_block,
