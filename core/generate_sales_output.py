@@ -38,25 +38,45 @@ def generate_sales_output(
     # Read from logs file
     logs_df = pd.read_csv(logs_file)
 
-    # Filter for OpenSea v1 and v2 marketplace contracts
+    # Filter for marketplace contracts
     logs_df = logs_df.loc[
         logs_df["address"].isin(
             [
-                "0x7be8076f4ea4a4ad08075c2508e481d6c946d12b",
-                "0x7f268357a8c2552623316e2562d90e642bb538e5",
+                "0x7be8076f4ea4a4ad08075c2508e481d6c946d12b",  # OpenSea v1
+                "0x7f268357a8c2552623316e2562d90e642bb538e5",  # OpenSea v2
+                "0x59728544b08ab483533076417fbbb2fd0b17ce3a",  # LooksRare
             ]
         )
     ]
 
-    # Filter for topic0 equal to the kecakk-256 hash of OrdersMatched(bytes32,bytes32,address,address,uint256,bytes32)
-    event_signature_hash = (
-        "0xc4109843e0b7d514e4c093114b863f8e7d8d9a458c372cd51bfe526b588006c9"
-    )
-    logs_df = logs_df.loc[logs_df["topics"].str[:66] == event_signature_hash]
+    # Filter for topic0 equal to:
+    # OrdersMatched(bytes32,bytes32,address,address,uint256,bytes32)
+    # TakerAsk(bytes32,uint256,address,address,address,address,address,uint256,uint256,uint256)
+    # TakerBid(bytes32,uint256,address,address,address,address,address,uint256,uint256,uint256)
+
+    event_signature_hash = [
+        "0xc4109843e0b7d514e4c093114b863f8e7d8d9a458c372cd51bfe526b588006c9",
+        "0x68cd251d4d267c6e2034ff0088b990352b97b2002c0476587d0c4da889c11330",
+        "0x95fb6205e23ff6bda16a2d1dba56b9ad7c783f67c96fa149785052f47696f2be",
+    ]
+
+    logs_df = logs_df.loc[logs_df["topics"].str[:66].isin(event_signature_hash)]
 
     # Extract maker and taker addresses from event log topics
-    logs_df["maker"] = "0x" + logs_df["topics"].str[93:133]
-    logs_df["taker"] = "0x" + logs_df["topics"].str[160:200]
+    # Note: OpenSea log has topic1 = maker, LooksRare log has topic1 = taker
+    logs_df["maker"] = np.where(
+        logs_df["topics"].str[:66]
+        == "0xc4109843e0b7d514e4c093114b863f8e7d8d9a458c372cd51bfe526b588006c9",
+        "0x" + logs_df["topics"].str[93:133],
+        "0x" + logs_df["topics"].str[160:200],
+    )
+    logs_df["taker"] = np.where(
+        logs_df["topics"].str[:66]
+        == "0xc4109843e0b7d514e4c093114b863f8e7d8d9a458c372cd51bfe526b588006c9",
+        "0x" + logs_df["topics"].str[160:200],
+        "0x" + logs_df["topics"].str[93:133],
+    )
+
     logs_df = logs_df[["transaction_hash", "data", "topics", "maker", "taker"]]
 
     # Read date block mapping and ETH prices from files

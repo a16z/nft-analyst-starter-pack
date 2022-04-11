@@ -1,6 +1,6 @@
 # NFT Analyst Starter Pack
 
-Enter your Alchemy API key and an NFT contract address, and with one command generate CSV extracts for all token transfers, historical sales on OpenSea, and each underlying item's metadata (with calculated rarity scores).
+Enter your Alchemy API key and an NFT contract address, and with one command generate CSV extracts for all token transfers, historical sales, and each underlying item's metadata (with calculated rarity scores).
 
 You can read more from us about what this is, and why it matters, [here](https://a16z.com/2022/03/18/nft-starter-pack-analyze-data-metadata-build-tools).
 
