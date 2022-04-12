@@ -49,7 +49,7 @@ def generate_sales_output(
         )
     ]
 
-    # Filter for topic0 equal to:
+    # Filter for topic0 equal to the kecakk-256 hash of the below function signatures:
     # OrdersMatched(bytes32,bytes32,address,address,uint256,bytes32)
     # TakerAsk(bytes32,uint256,address,address,address,address,address,uint256,uint256,uint256)
     # TakerBid(bytes32,uint256,address,address,address,address,address,uint256,uint256,uint256)
@@ -60,6 +60,7 @@ def generate_sales_output(
         "0x95fb6205e23ff6bda16a2d1dba56b9ad7c783f67c96fa149785052f47696f2be",
     ]
 
+    # Substring mapping is used to parse topic data, which is grouped by 64 hexidecimal characters
     logs_df = logs_df.loc[logs_df["topics"].str[:66].isin(event_signature_hash)]
 
     # Extract maker and taker addresses from event log topics
