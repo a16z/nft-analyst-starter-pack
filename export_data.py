@@ -22,14 +22,16 @@ from core.generate_metadata_output import generate_metadata_output
 from core.generate_sales_output import generate_sales_output
 from core.generate_transfers_output import generate_transfers_output
 from jobs.export_logs import export_logs
+from jobs.export_recent_block import export_recent_block
+from jobs.get_recent_block import get_recent_block
 from jobs.export_token_transfers import export_token_transfers
 from jobs.export_1155_transfers import export_1155_transfers
 from jobs.get_nft_metadata import get_metadata_for_collection
 from jobs.update_block_to_date_mapping import update_block_to_date_mapping
 from jobs.update_eth_prices import update_eth_prices
+from jobs.cleanup_outputs import clean_up_outputs
 from utils.check_contract_support import check_contract_support
 from utils.extract_unique_column_value import extract_unique_column_value
-from utils.find_deployment_block_for_contract import find_deployment_block_for_contract
 
 
 # Set click CLI parameters
@@ -58,12 +60,16 @@ def export_data(contract_address, alchemy_api_key):
     warnings.simplefilter(action="ignore", category=FutureWarning)
     print("Process started for contract address: " + str(contract_address))
 
+    # get current timestamp
+    right_now = str(datetime.now().timestamp())
+
     # Assign file paths (persisting files only)
     date_block_mapping_csv = "./raw-data/date_block_mapping.csv"
     eth_prices_csv = "./raw-data/eth_prices.csv"
-    sales_csv = "sales_" + contract_address + ".csv"
+    sales_csv = "sales_" + contract_address + "_" + right_now + ".csv"
     metadata_csv = "metadata_" + contract_address + ".csv"
-    transfers_csv = "transfers_" + contract_address + ".csv"
+    transfers_csv = "transfers_" + contract_address + "_" + right_now + ".csv"
+    recent_block_csv = "blocks_" + contract_address + ".csv"
 
     # Set provider
     provider_uri = "https://eth-mainnet.alchemyapi.io/v2/" + alchemy_api_key
@@ -73,14 +79,16 @@ def export_data(contract_address, alchemy_api_key):
     ethereum_etl_max_workers = 8
 
     # Get block range
-    start_block = find_deployment_block_for_contract(contract_address, web3)
-    print(
-        "Contract {} appears to have been deployed at block {}".format(
-            contract_address, start_block
-        )
-    )
+    # If cache file exists, read from it and set as start block
+    start_block = get_recent_block(recent_block_csv, contract_address, web3)
+
     yesterday = datetime.today() - timedelta(days=1)
     _, end_block = eth_service.get_block_range_for_date(yesterday)
+
+    # If start_block == end_block, then contract data is up to date
+    if start_block == end_block:
+        print("Contract data is up to date. No updates required.")
+        sys.exit(0)
 
     # Create tempfiles
     with tempfile.NamedTemporaryFile(
@@ -168,6 +176,9 @@ def export_data(contract_address, alchemy_api_key):
             output=transfers_csv,
         )
 
+        # Delete sales and transfer tempfiles
+        clean_up_outputs()
+
         # Fetch metadata
         get_metadata_for_collection(
             api_key=alchemy_api_key,
@@ -180,6 +191,12 @@ def export_data(contract_address, alchemy_api_key):
             raw_attributes_file=raw_attributes_csv.name,
             token_ids_file=token_ids_txt.name,
             output=metadata_csv,
+        )
+
+        # Generate recent block output
+        export_recent_block(
+            block_file=recent_block_csv,
+            current_block_number=end_block,
         )
 
         print("Data exported to transfers.csv, sales.csv and metadata.csv")

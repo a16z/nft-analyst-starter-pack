@@ -1,0 +1,11 @@
+version: "3.4"
+
+services:
+  block_explorer:
+    build:
+      context: ./
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/app
+    command: "python utils/simplehttp.py"
