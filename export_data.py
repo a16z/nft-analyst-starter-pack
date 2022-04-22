@@ -1,8 +1,8 @@
 import sys
 
 # Check for Python version <= 3.10
-if sys.version_info[0] == 3 and sys.version_info[1] >= 10:
-    raise Exception("Python >=3.10 is not supported at this time.")
+# if sys.version_info[0] == 3 and sys.version_info[1] >= 10:
+#     raise Exception("Python >=3.10 is not supported at this time.")
 
 import asyncio
 import os
@@ -49,6 +49,12 @@ from utils.find_deployment_block_for_contract import find_deployment_block_for_c
     help="The contract address of the desired NFT collection.",
 )
 def export_data(contract_address, alchemy_api_key):
+
+    if (alchemy_api_key is None) or (alchemy_api_key == ""):
+        raise Exception("Alchemy API key is required.")
+
+    # Convert address to checksummed address
+    contract_address = Web3.toChecksumAddress(contract_address)
 
     # Check if contract address is supported by Alchemy
     check_contract_support(
