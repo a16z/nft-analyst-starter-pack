@@ -52,6 +52,12 @@ from utils.extract_unique_column_value import extract_unique_column_value
 )
 def export_data(contract_address, alchemy_api_key):
 
+    if (alchemy_api_key is None) or (alchemy_api_key == ""):
+        raise Exception("Alchemy API key is required.")
+
+    # Convert address to checksummed address
+    contract_address = Web3.toChecksumAddress(contract_address)
+
     # Check if contract address is supported by Alchemy
     check_contract_support(
         alchemy_api_key=alchemy_api_key, contract_address=contract_address
