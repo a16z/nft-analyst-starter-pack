@@ -45,8 +45,8 @@ def export_1155_transfers(
             event_filter = web3.eth.filter(
                 {
                     "address": tokens,
-                    "fromBlock": first_block,
-                    "toBlock": last_block,
+                    "fromBlock": int(first_block),
+                    "toBlock": int(last_block),
                     "topics": [event_signature_hash],
                 }
             )
@@ -101,8 +101,8 @@ def export_1155_transfers(
             event_filter = web3.eth.filter(
                 {
                     "address": tokens,
-                    "fromBlock": first_block,
-                    "toBlock": last_block,
+                    "fromBlock": int(first_block),
+                    "toBlock": int(last_block),
                     "topics": [event_signature_hash],
                 }
             )
