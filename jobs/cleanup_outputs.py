@@ -60,5 +60,9 @@ def clean_up_outputs():
             os.remove(t)
 
         # Export to final output csv files
-        transfers_df.sort_values(by=["block_number"], ascending=False).to_csv(clean_transfers_csv, index=False)
-        sales_df.sort_values(by=["block_number"], ascending=False).to_csv(clean_sales_csv, index=False)
+        transfers_df.sort_values(by=["block_number"], ascending=False).to_csv(
+            clean_transfers_csv, index=False
+        )
+        sales_df.sort_values(by=["block_number"], ascending=False).to_csv(
+            clean_sales_csv, index=False
+        )
