@@ -22,7 +22,7 @@ from core.generate_metadata_output import generate_metadata_output
 from core.generate_sales_output import generate_sales_output
 from core.generate_transfers_output import generate_transfers_output
 from jobs.export_logs import export_logs
-from jobs.export_recent_block import export_recent_block
+from jobs.export_update_logs import export_update_logs
 from jobs.get_recent_block import get_recent_block
 from jobs.export_token_transfers import export_token_transfers
 from jobs.export_1155_transfers import export_1155_transfers
@@ -75,7 +75,7 @@ def export_data(contract_address, alchemy_api_key):
     sales_csv = "sales_" + contract_address + "_" + right_now + ".csv"
     metadata_csv = "metadata_" + contract_address + ".csv"
     transfers_csv = "transfers_" + contract_address + "_" + right_now + ".csv"
-    recent_block_csv = "blocks_" + contract_address + ".csv"
+    updates_csv = "./update-logs/" + contract_address + ".csv"
 
     # Set provider
     provider_uri = "https://eth-mainnet.alchemyapi.io/v2/" + alchemy_api_key
@@ -86,7 +86,7 @@ def export_data(contract_address, alchemy_api_key):
 
     # Get block range
     # If cache file exists, read from it and set as start block
-    start_block = get_recent_block(recent_block_csv, contract_address, web3)
+    start_block = get_recent_block(updates_csv, contract_address, web3)
 
     yesterday = datetime.today() - timedelta(days=1)
     _, end_block = eth_service.get_block_range_for_date(yesterday)
@@ -200,8 +200,8 @@ def export_data(contract_address, alchemy_api_key):
         )
 
         # Generate recent block output
-        export_recent_block(
-            block_file=recent_block_csv,
+        export_update_logs(
+            update_log_file=updates_csv,
             current_block_number=end_block,
         )
 

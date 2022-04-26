@@ -63,10 +63,6 @@ def clean_up_outputs():
         for t in transfer_files:
             os.remove(t)
 
-        # get unique rows from sales and transfers
-        sales_df = sales_df.drop_duplicates(subset=["transaction_hash"])
-        transfers_df = transfers_df.drop_duplicates(subset=["transaction_hash"])
-
         # Write clean files
-        transfers_df.to_csv(clean_transfers_csv, index=False)
-        sales_df.to_csv(clean_sales_csv, index=False)
+        transfers_df.sort_values(by=["block_number"], ascending=False).to_csv(clean_transfers_csv, index=False)
+        sales_df.sort_values(by=["block_number"], ascending=False).to_csv(clean_sales_csv, index=False)
