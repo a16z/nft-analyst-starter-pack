@@ -55,7 +55,7 @@ def export_data(contract_address, alchemy_api_key):
     if (alchemy_api_key is None) or (alchemy_api_key == ""):
         raise Exception("Alchemy API key is required.")
 
-    # Convert address to checksummed address
+    # Convert address to checksummed address (a specific pattern of uppercase and lowercase letters)
     contract_address = Web3.toChecksumAddress(contract_address)
 
     # Check if contract address is supported by Alchemy
@@ -66,7 +66,7 @@ def export_data(contract_address, alchemy_api_key):
     warnings.simplefilter(action="ignore", category=FutureWarning)
     print("Process started for contract address: " + str(contract_address))
 
-    # get current timestamp
+    # Get current timestamp
     right_now = str(datetime.now().timestamp())
 
     # Assign file paths (persisting files only)
@@ -85,15 +85,15 @@ def export_data(contract_address, alchemy_api_key):
     ethereum_etl_max_workers = 8
 
     # Get block range
-    # If cache file exists, read from it and set as start block
+    # If update logs exist, read from the saved file and set the start block
     start_block = get_recent_block(updates_csv, contract_address, web3)
 
     yesterday = datetime.today() - timedelta(days=1)
     _, end_block = eth_service.get_block_range_for_date(yesterday)
 
-    # If start_block == end_block, then contract data is up to date
+    # If start_block == end_block, then data is already up to date
     if start_block == end_block:
-        print("Contract data is up to date. No updates required.")
+        print("Data is up to date. No updates required.")
         sys.exit(0)
 
     # Create tempfiles
@@ -182,7 +182,7 @@ def export_data(contract_address, alchemy_api_key):
             output=transfers_csv,
         )
 
-        # Delete sales and transfer tempfiles
+        # Consolidate sales and transfers data into final outputs
         clean_up_outputs()
 
         # Fetch metadata
@@ -199,7 +199,7 @@ def export_data(contract_address, alchemy_api_key):
             output=metadata_csv,
         )
 
-        # Generate recent block output
+        # Export to update log file
         export_update_logs(
             update_log_file=updates_csv,
             current_block_number=end_block,

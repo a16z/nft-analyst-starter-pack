@@ -3,9 +3,8 @@ import os
 
 
 def clean_up_outputs():
-    print("Cleaning up CSVs rn...")
 
-    # Find all csv files and split information into dataframe
+    # Find all csv files and organize by data type, contract, and run date
     csv_files = [f for f in os.listdir(".") if f.endswith(".csv")]
 
     filetypes = []
@@ -31,12 +30,11 @@ def clean_up_outputs():
     )
 
     # Get unique contracts with existing sales or transfer data
-    print("Collecting contracts that have existing sales or transfer data...")
     unique_contracts = df[
         (df["filetype"] == "sales") | (df["filetype"] == "transfers")
     ]["contract"].unique()
 
-    # Append datasets
+    # Consolidate sales and transfers data into final output CSVs
     for uc in unique_contracts:
         clean_sales_csv = "sales_" + uc + ".csv"
         clean_transfers_csv = "transfers_" + uc + ".csv"
@@ -49,20 +47,18 @@ def clean_up_outputs():
         ]
         sales_files = df[(df["contract"] == uc) & (df["filetype"] == "sales")]["file"]
 
-        # Clean up transfer files
         for t in transfer_files:
             transfers_df = pd.concat([transfers_df, pd.read_csv(t)])
 
-        # Clean up sales files
         for s in sales_files:
             sales_df = pd.concat([sales_df, pd.read_csv(s)])
 
-        # Remove old files
+        # Remove historical files
         for s in sales_files:
             os.remove(s)
         for t in transfer_files:
             os.remove(t)
 
-        # Write clean files
+        # Export to final output csv files
         transfers_df.sort_values(by=["block_number"], ascending=False).to_csv(clean_transfers_csv, index=False)
         sales_df.sort_values(by=["block_number"], ascending=False).to_csv(clean_sales_csv, index=False)

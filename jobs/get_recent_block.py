@@ -4,19 +4,20 @@ from utils.find_deployment_block_for_contract import find_deployment_block_for_c
 
 
 def get_recent_block(update_log_file, contract_address, web3):
-    print("Getting most recent cached block number for the contract...")
+    print("Checking update logs for most recent block...")
 
-    # check if file exists
+    # Check if update log file exists
     if os.path.isfile(update_log_file):
-        # read from existing file and find the date last updated
+        # Read from existing file and find the latest block number
         recent_block_df = pd.read_csv(update_log_file)
         most_recent_block = recent_block_df.iloc[-1]["most_recent_block_number"]
+        print("Starting with block "+str(most_recent_block))
     else:
-        # if file does not exist find deployment block
+        # If file does not exist, find contract deployment block
         most_recent_block = find_deployment_block_for_contract(contract_address, web3)
 
         print(
-            "Contract {} appears to have been deployed at block {}".format(
+            "No existing data. Contract {} appears to have been deployed at block {}".format(
                 contract_address, most_recent_block
             )
         )
