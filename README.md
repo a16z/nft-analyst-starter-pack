@@ -14,13 +14,15 @@ Then, install the dependencies.
 
 ## Export Data
 
-If you're using poetry, remember to prepend this command with `poetry run` or activate the appropriate environment with `poetry shell` while in the `nft-analyst-starter-pack` directory. You can learn more about poetry and how to properly install it [here](https://python-poetry.org/docs/).
+If you're using poetry, remember to prepend this command with `poetry run` or activate the appropriate environment with `poetry shell` while in the `nft-analyst-starter-pack` directory. You can learn more about poetry and how to properly install it [here](https://python-poetry.org/docs/). If using Docker you can spin up a containerized environment with `docker-compose up` and cd into the container to run commands from the CLI. You can learn more about Docker Compose [here](https://docs.docker.com/compose/).
 
 ```bash
 python export_data.py --alchemy-api-key YourAPIKey --contract-address 0xED5AF388653567Af2F388E6224dC7C4b3241C544
 ```
 
 The first argument is your Alchemy API key and the second argument is the contract address of the NFT collection you want to export (the example provided is Azuki).
+
+
 
 ### End-to-End Example
 
