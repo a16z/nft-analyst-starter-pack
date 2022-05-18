@@ -23,6 +23,7 @@ def export_1155_transfers(
         columns=(
             "transaction_hash",
             "block_number",
+            "log_index",
             "value",
             "from_address",
             "to_address",
@@ -60,12 +61,14 @@ def export_1155_transfers(
                 num_tokens = int(event["data"][-64:], 16)
                 transaction_hash = Web3.toHex(event["transactionHash"])
                 block_number = event["blockNumber"]
+                log_index = event["logIndex"]
 
                 # Append event log data to the main dataframe
                 transfer_logs = transfer_logs.append(
                     {
                         "transaction_hash": transaction_hash,
                         "block_number": block_number,
+                        "log_index": log_index,
                         "value": value,
                         "from_address": from_address,
                         "to_address": to_address,
@@ -133,12 +136,14 @@ def export_1155_transfers(
                     to_address = "0x" + Web3.toHex(event["topics"][3])[-40:]
                     transaction_hash = Web3.toHex(event["transactionHash"])
                     block_number = event["blockNumber"]
+                    log_index = event["logIndex"]
 
                     # Append event log data to the main dataframe
                     transfer_logs = transfer_logs.append(
                         {
                             "transaction_hash": transaction_hash,
                             "block_number": block_number,
+                            "log_index": log_index,
                             "value": value,
                             "from_address": from_address,
                             "to_address": to_address,
