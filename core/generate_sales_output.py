@@ -10,23 +10,45 @@ def generate_sales_output(
 
     # Find the first sender and last receiver per tx hash and asset_id (based on log index)
     # This allows us to identify the relevant buyer/seller from multi-sale transactions
-    first_transfers_filter = transfers_df.groupby(['transaction_hash','value'])['log_index'].min().reset_index()
-    first_transfers_df = transfers_df.merge(first_transfers_filter, on=['transaction_hash','value','log_index'], how="inner")
-    first_transfers_df = first_transfers_df[["transaction_hash","value","from_address"]]
+    first_transfers_filter = (
+        transfers_df.groupby(["transaction_hash", "value"])["log_index"]
+        .min()
+        .reset_index()
+    )
+    first_transfers_df = transfers_df.merge(
+        first_transfers_filter,
+        on=["transaction_hash", "value", "log_index"],
+        how="inner",
+    )
+    first_transfers_df = first_transfers_df[
+        ["transaction_hash", "value", "from_address"]
+    ]
 
-    last_transfers_filter = transfers_df.groupby(['transaction_hash','value'])['log_index'].max().reset_index()
-    last_transfers_df = transfers_df.merge(last_transfers_filter, on=['transaction_hash','value','log_index'], how="inner")
-    last_transfers_df = last_transfers_df[["transaction_hash","value","to_address"]]
+    last_transfers_filter = (
+        transfers_df.groupby(["transaction_hash", "value"])["log_index"]
+        .max()
+        .reset_index()
+    )
+    last_transfers_df = transfers_df.merge(
+        last_transfers_filter,
+        on=["transaction_hash", "value", "log_index"],
+        how="inner",
+    )
+    last_transfers_df = last_transfers_df[["transaction_hash", "value", "to_address"]]
 
-    modified_transfers_df = first_transfers_df.merge(last_transfers_df, on=['transaction_hash','value'], how="inner")
+    modified_transfers_df = first_transfers_df.merge(
+        last_transfers_df, on=["transaction_hash", "value"], how="inner"
+    )
     modified_transfers_df.columns = [
-            "transaction_hash",
-            "value",
-            "seller",
-            "buyer",
-        ]
+        "transaction_hash",
+        "value",
+        "seller",
+        "buyer",
+    ]
 
-    transfers_df = transfers_df.merge(modified_transfers_df, on=['transaction_hash','value'], how="inner")
+    transfers_df = transfers_df.merge(
+        modified_transfers_df, on=["transaction_hash", "value"], how="inner"
+    )
 
     if (
         "num_tokens" in transfers_df.columns
@@ -190,10 +212,11 @@ def generate_sales_output(
         | (sales_df["seller"] == sales_df["taker"])
     ]
 
-    sales_df = sales_df.drop_duplicates()
-
-    # If there are multiple sellers in the same tx hash, we must drop it from dataset given the lack of granularity in event logs
-    sales_df = sales_df.drop_duplicates(subset=['transaction_hash', 'seller'], keep=False)
+    # If there are multiple sales with the same buyer/seller in the same tx hash, we must drop it from dataset given the lack of granularity in event logs
+    sales_df = sales_df.drop_duplicates() # First drop exact duplicates
+    sales_df = sales_df.drop_duplicates(
+        subset=["transaction_hash", "buyer", "seller"], keep=False
+    )
 
     # Output sales data to CSV file
     sales_df = sales_df.sort_values(by=["block_number"], ascending=False)

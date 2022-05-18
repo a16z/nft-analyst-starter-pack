@@ -20,7 +20,9 @@ def generate_transfers_output(transfers_file, date_block_mapping_file, output):
 
     # Clean up dataframe for output
     transfers_df = transfers_df.rename(columns={"value": "asset_id"})
-    transfers_df = transfers_df.sort_values(by=['block_number', 'log_index'], ascending = [False, True])
+    transfers_df = transfers_df.sort_values(
+        by=["block_number", "log_index"], ascending=[False, True]
+    )
 
     if (
         "num_tokens" in transfers_df.columns
@@ -46,7 +48,7 @@ def generate_transfers_output(transfers_file, date_block_mapping_file, output):
                 "asset_id",
                 "from_address",
                 "to_address",
-                "log_index"
+                "log_index",
             ]
         ]
 
