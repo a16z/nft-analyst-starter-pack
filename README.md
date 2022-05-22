@@ -41,11 +41,11 @@ The data outputs are stored as three CSV files:
 
 [transfers_0x---.csv](https://github.com/a16z/nft-analyst-starter-pack/blob/main/transfers_0xED5AF388653567Af2F388E6224dC7C4b3241C544.csv)
 
-| transaction_hash                                                   | block_number | date   | asset_id | from_address                               | to_address                                 |
-|--------------------------------------------------------------------|--------------|--------|----------|--------------------------------------------|--------------------------------------------|
-| 0xaabd9e8ef8c06995ffccf4946215dea21e8c51c9a46af1cb2921fc23390ce775 | 14349209     | 3/8/22 | 2069     | 0x6791102212777d7bce8ed433d54192b7d8af0f9a | 0x5fa6d7ea41d365dba778001d76f092cdedb2eaf1 |
-| 0xc74993c3b32f3edff483f2d8fbce7e5dbc55dcc345780a9964561a39cc639f9d | 14349204     | 3/8/22 | 5601     | 0x6791102212777d7bce8ed433d54192b7d8af0f9a | 0x5fa6d7ea41d365dba778001d76f092cdedb2eaf1 |
-| 0xcacdccbb2da5660912a62282a2561579b13a53b6348a4319669adcb56eba7a58 | 14349091     | 3/8/22 | 1842     | 0xc310e760778ecbca4c65b6c559874757a4c4ece0 | 0x932e834ff9d2697da014118c85ea5bcb442f3297 |
+|transaction_hash                                                  |block_number|date  |asset_id|from_address                              |to_address                                |log_index|
+|------------------------------------------------------------------|------------|------|--------|------------------------------------------|------------------------------------------|---------|
+|0xaabd9e8ef8c06995ffccf4946215dea21e8c51c9a46af1cb2921fc23390ce775|14349209    |3/8/22|2069    |0x6791102212777d7bce8ed433d54192b7d8af0f9a|0x5fa6d7ea41d365dba778001d76f092cdedb2eaf1|38       |
+|0xc74993c3b32f3edff483f2d8fbce7e5dbc55dcc345780a9964561a39cc639f9d|14349204    |3/8/22|5601    |0x6791102212777d7bce8ed433d54192b7d8af0f9a|0x5fa6d7ea41d365dba778001d76f092cdedb2eaf1|47       |
+|0xcacdccbb2da5660912a62282a2561579b13a53b6348a4319669adcb56eba7a58|14349091    |3/8/22|1842    |0xc310e760778ecbca4c65b6c559874757a4c4ece0|0x932e834ff9d2697da014118c85ea5bcb442f3297|28       |
 
 [sales_0x---.csv](https://github.com/a16z/nft-analyst-starter-pack/blob/main/sales_0xED5AF388653567Af2F388E6224dC7C4b3241C544.csv)
 
