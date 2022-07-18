@@ -10,6 +10,7 @@ import sys
 import tempfile
 import warnings
 from datetime import datetime, timedelta
+import contextlib
 
 import click
 import ethereumetl
@@ -82,7 +83,7 @@ def export_data(contract_address, alchemy_api_key):
     web3 = Web3(Web3.HTTPProvider(provider_uri))
     eth_service = EthService(web3)
     ethereum_etl_batch_size = 1000
-    ethereum_etl_max_workers = 8
+    ethereum_etl_max_workers = 3
 
     # Get block range
     # If update logs exist, read from the saved file and set the start block
@@ -107,16 +108,17 @@ def export_data(contract_address, alchemy_api_key):
         delete=False
     ) as raw_attributes_csv:
 
-        # Export token transfers
-        export_token_transfers(
-            start_block=start_block,
-            end_block=end_block,
-            batch_size=ethereum_etl_batch_size,
-            provider_uri=provider_uri,
-            max_workers=ethereum_etl_max_workers,
-            tokens=contract_address,
-            output=transfers_csv,
-        )
+        with contextlib.redirect_stderr(None):
+            # Export token transfers
+            export_token_transfers(
+                start_block=start_block,
+                end_block=end_block,
+                batch_size=ethereum_etl_batch_size,
+                provider_uri=provider_uri,
+                max_workers=ethereum_etl_max_workers,
+                tokens=contract_address,
+                output=transfers_csv,
+            )
 
         # If there are no 721 transfers, export 1155 transfers
         if os.stat(transfers_csv).st_size == 0:
@@ -147,16 +149,17 @@ def export_data(contract_address, alchemy_api_key):
             column="value",
         )
 
-        # Export logs
-        export_logs(
-            start_block=start_block,
-            end_block=end_block,
-            batch_size=ethereum_etl_batch_size,
-            provider_uri=provider_uri,
-            max_workers=ethereum_etl_max_workers,
-            tx_hashes_filename=transaction_hashes_txt.name,
-            output=logs_csv.name,
-        )
+        with contextlib.redirect_stderr(None):
+            # Export logs
+            export_logs(
+                start_block=start_block,
+                end_block=end_block,
+                batch_size=20,
+                provider_uri=provider_uri,
+                max_workers=2,
+                tx_hashes_filename=transaction_hashes_txt.name,
+                output=logs_csv.name,
+            )
 
         # Update date block mapping
         update_block_to_date_mapping(
