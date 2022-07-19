@@ -179,9 +179,9 @@ def generate_sales_output(
             == "0000000000000000000000000000000000000000000000000000000000000003"
         ),  # Offer is NFT and 3 recipients of consideration
         (
-            seaport_v1_1_logs_df["data"].str[834:898].apply(int, base=16)
-            + seaport_v1_1_logs_df["data"].str[1154:1218].apply(int, base=16)
-            + seaport_v1_1_logs_df["data"].str[1474:1538].apply(int, base=16)
+            seaport_v1_1_logs_df["data"].str[834:898].apply(lambda x: int(x,base=16) if x !='' else 0)
+            + seaport_v1_1_logs_df["data"].str[1154:1218].apply(lambda x: int(x,base=16) if x !='' else 0)
+            + seaport_v1_1_logs_df["data"].str[1474:1538].apply(lambda x: int(x,base=16) if x !='' else 0)
         )
         / 10**18,
         np.where(
@@ -194,11 +194,11 @@ def generate_sales_output(
                 == "0000000000000000000000000000000000000000000000000000000000000002"
             ),  # Offer is NFT and 2 recipients of consideration
             (
-                seaport_v1_1_logs_df["data"].str[834:898].apply(int, base=16)
-                + seaport_v1_1_logs_df["data"].str[1154:1218].apply(int, base=16)
+                seaport_v1_1_logs_df["data"].str[834:898].apply(lambda x: int(x,base=16) if x !='' else 0)
+                + seaport_v1_1_logs_df["data"].str[1154:1218].apply(lambda x: int(x,base=16) if x !='' else 0)
             )
             / 10**18,
-            seaport_v1_1_logs_df["data"].str[514:578].apply(int, base=16)
+            seaport_v1_1_logs_df["data"].str[514:578].apply(lambda x: int(x,base=16) if x !='' else 0)
             / 10**18,  # Else offer is WETH (or other token)
         ),
     )
