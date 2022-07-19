@@ -102,35 +102,35 @@ def generate_sales_output(
     # Not decoded - 0x3cbb63f144840e5b1b0a38a7c19211d2e89de4d7c5faf8b2d3c1776c302d1d33 (X2Y2)
     # Not decoded - 0x9d9af8e38d66c62e2c12f0225249fd9d721c54b83f48d9352c97c6cacdcb6f31 (SeaPort)
 
-    opensea_v1_signature_hash = [
+    opensea_v1_signature_hash = (
         "0xc4109843e0b7d514e4c093114b863f8e7d8d9a458c372cd51bfe526b588006c9"
-    ]
-    opensea_v2_signature_hash = [
+    )
+    opensea_v2_signature_hash = (
         "0x68cd251d4d267c6e2034ff0088b990352b97b2002c0476587d0c4da889c11330"
-    ]
-    looksrare_signature_hash = [
+    )
+    looksrare_signature_hash = (
         "0x95fb6205e23ff6bda16a2d1dba56b9ad7c783f67c96fa149785052f47696f2be"
-    ]
-    x2y2_signature_hash = [
+    )
+    x2y2_signature_hash = (
         "0x3cbb63f144840e5b1b0a38a7c19211d2e89de4d7c5faf8b2d3c1776c302d1d33"
-    ]
-    seaport_v1_1_signature_hash = [
+    )
+    seaport_v1_1_signature_hash = (
         "0x9d9af8e38d66c62e2c12f0225249fd9d721c54b83f48d9352c97c6cacdcb6f31"
-    ]
+    )
 
     # Substring mapping is used to parse topic data, which is grouped by 64 hexidecimal characters
     opensea_v1_logs_df = logs_df.loc[
-        logs_df["topics"].str[:66].isin(opensea_v1_signature_hash)
+        logs_df["topics"].str[:66] == opensea_v1_signature_hash
     ]
     opensea_v2_logs_df = logs_df.loc[
-        logs_df["topics"].str[:66].isin(opensea_v2_signature_hash)
+        logs_df["topics"].str[:66] == opensea_v2_signature_hash
     ]
     looksrare_logs_df = logs_df.loc[
-        logs_df["topics"].str[:66].isin(looksrare_signature_hash)
+        logs_df["topics"].str[:66] == looksrare_signature_hash
     ]
-    x2y2_logs_df = logs_df.loc[logs_df["topics"].str[:66].isin(x2y2_signature_hash)]
+    x2y2_logs_df = logs_df.loc[logs_df["topics"].str[:66] == x2y2_signature_hash]
     seaport_v1_1_logs_df = logs_df.loc[
-        logs_df["topics"].str[:66].isin(seaport_v1_1_signature_hash)
+        logs_df["topics"].str[:66] == seaport_v1_1_signature_hash
     ]
 
     # Decode log data for ETH-denominated sale price
@@ -146,29 +146,61 @@ def generate_sales_output(
     x2y2_logs_df["raw_price_eth"] = (
         x2y2_logs_df["data"].str[802:834].apply(int, base=16) / 10**18
     )
+
+    # Seaport log must have a valid recipient
     seaport_v1_1_logs_df = seaport_v1_1_logs_df.loc[
-        seaport_v1_1_logs_df["data"].str[834:898] != ""
+        seaport_v1_1_logs_df["data"].str[66:130]
+        != "0000000000000000000000000000000000000000000000000000000000000000"
     ]
+    # Seaport log must represent a single-offer sale
     seaport_v1_1_logs_df = seaport_v1_1_logs_df.loc[
-        seaport_v1_1_logs_df["data"].str[1154:1218] != ""
+        seaport_v1_1_logs_df["data"].str[258:322]
+        == "0000000000000000000000000000000000000000000000000000000000000001"
     ]
+    # Seaport log must have two or three recipients of consideration (seller, OS wallet, [optional] creator royalty)
     seaport_v1_1_logs_df = seaport_v1_1_logs_df.loc[
-        seaport_v1_1_logs_df["data"].str[1474:1538] != ""
+        seaport_v1_1_logs_df["data"]
+        .str[578:642]
+        .isin(
+            [
+                "0000000000000000000000000000000000000000000000000000000000000002",
+                "0000000000000000000000000000000000000000000000000000000000000003",
+            ]
+        )
     ]
-    seaport_v1_1_logs_df = seaport_v1_1_logs_df.loc[
-        seaport_v1_1_logs_df["data"].str[514:578] != ""
-    ]
+
     seaport_v1_1_logs_df["raw_price_eth"] = np.where(
-        seaport_v1_1_logs_df["data"].str[322:386]
-        == "0000000000000000000000000000000000000000000000000000000000000002",  # Offer is NFT, not WETH
+        (
+            seaport_v1_1_logs_df["data"].str[322:386]
+            == "0000000000000000000000000000000000000000000000000000000000000002"
+        )
+        & (
+            seaport_v1_1_logs_df["data"].str[578:642]
+            == "0000000000000000000000000000000000000000000000000000000000000003"
+        ),  # Offer is NFT and 3 recipients of consideration
         (
             seaport_v1_1_logs_df["data"].str[834:898].apply(int, base=16)
             + seaport_v1_1_logs_df["data"].str[1154:1218].apply(int, base=16)
             + seaport_v1_1_logs_df["data"].str[1474:1538].apply(int, base=16)
         )
         / 10**18,
-        seaport_v1_1_logs_df["data"].str[514:578].apply(int, base=16)
-        / 10**18,  # Else offer is WETH (or other token)
+        np.where(
+            (
+                seaport_v1_1_logs_df["data"].str[322:386]
+                == "0000000000000000000000000000000000000000000000000000000000000002"
+            )
+            & (
+                seaport_v1_1_logs_df["data"].str[578:642]
+                == "0000000000000000000000000000000000000000000000000000000000000002"
+            ),  # Offer is NFT and 2 recipients of consideration
+            (
+                seaport_v1_1_logs_df["data"].str[834:898].apply(int, base=16)
+                + seaport_v1_1_logs_df["data"].str[1154:1218].apply(int, base=16)
+            )
+            / 10**18,
+            seaport_v1_1_logs_df["data"].str[514:578].apply(int, base=16)
+            / 10**18,  # Else offer is WETH (or other token)
+        ),
     )
 
     # Filter out non-ETH denominated sales on X2Y2 and SeaPort
@@ -179,7 +211,7 @@ def generate_sales_output(
     ]
     seaport_v1_1_logs_df = seaport_v1_1_logs_df.loc[
         seaport_v1_1_logs_df["data"]
-        .str[1346:1410]
+        .str[1026:1090]
         .isin(
             [
                 "0000000000000000000000000000000000000000000000000000000000000000",
