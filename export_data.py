@@ -77,6 +77,7 @@ def export_data(contract_address, alchemy_api_key):
     metadata_csv = "metadata_" + contract_address + ".csv"
     transfers_csv = "transfers_" + contract_address + "_" + right_now + ".csv"
     updates_csv = "./update-logs/" + contract_address + ".csv"
+    all_transfers_csv = "transfers_" + contract_address + ".csv"
 
     # Set provider
     provider_uri = "https://eth-mainnet.alchemyapi.io/v2/" + alchemy_api_key
@@ -105,6 +106,8 @@ def export_data(contract_address, alchemy_api_key):
     ) as transaction_hashes_txt, tempfile.NamedTemporaryFile(
         delete=False
     ) as token_ids_txt, tempfile.NamedTemporaryFile(
+        delete=False
+    ) as all_token_ids_txt,tempfile.NamedTemporaryFile(
         delete=False
     ) as raw_attributes_csv:
 
@@ -188,6 +191,13 @@ def export_data(contract_address, alchemy_api_key):
         # Consolidate sales and transfers data into final outputs
         clean_up_outputs()
 
+        # Re-generate list of token IDs from consolidated data set
+        extract_unique_column_value(
+            input_filename=all_transfers_csv,
+            output_filename=all_token_ids_txt.name,
+            column="asset_id",
+        )
+
         # Fetch metadata
         get_metadata_for_collection(
             api_key=alchemy_api_key,
@@ -198,7 +208,7 @@ def export_data(contract_address, alchemy_api_key):
         # Generate metadata output
         generate_metadata_output(
             raw_attributes_file=raw_attributes_csv.name,
-            token_ids_file=token_ids_txt.name,
+            token_ids_file=all_token_ids_txt.name,
             output=metadata_csv,
         )
 
