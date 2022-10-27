@@ -5,7 +5,7 @@ import httpx
 
 def check_contract_support(alchemy_api_key, contract_address):
     # Do a single request to check if the contract address is supported by Alchemy's NFT API
-    alchemy_url = "https://eth-mainnet.g.alchemy.com/{alchemy_api_key}/v1/getNFTMetadata?contractAddress={contract_address}&tokenId=1".format(
+    alchemy_url = "https://eth-mainnet.g.alchemy.com/v2/{alchemy_api_key}/getNFTMetadata?contractAddress={contract_address}&tokenId=1".format(
         alchemy_api_key=alchemy_api_key,
         contract_address=contract_address,
     )

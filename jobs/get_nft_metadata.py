@@ -114,12 +114,12 @@ def get_metadata_for_collection(api_key, contract_address, output):
     # Loop through collection using pagination tokens until complete
     while process_active:
         if not start_token:
-            alchemy_url = "https://eth-mainnet.g.alchemy.com/v2/{api_key}/getNFTsForCollection?contractAddress={contract_address}&withMetadata=true".format(
+            alchemy_url = "https://eth-mainnet.g.alchemy.com/v2/{api_key}/getNFTsForCollection?contractAddress={contract_address}&withMetadata=true&refreshCache=true".format(
                 api_key=api_key,
                 contract_address=contract_address,
             )
         else:
-            alchemy_url = "https://eth-mainnet.g.alchemy.com/v2/{api_key}/getNFTsForCollection?contractAddress={contract_address}&withMetadata=true&startToken={start_token}".format(
+            alchemy_url = "https://eth-mainnet.g.alchemy.com/v2/{api_key}/getNFTsForCollection?contractAddress={contract_address}&withMetadata=true&refreshCache=true&startToken={start_token}".format(
                 api_key=api_key,
                 contract_address=contract_address,
                 start_token=start_token,
