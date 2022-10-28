@@ -157,9 +157,9 @@ def export_data(contract_address, alchemy_api_key):
             export_logs(
                 start_block=start_block,
                 end_block=end_block,
-                batch_size=20,
+                batch_size=5,
                 provider_uri=provider_uri,
-                max_workers=2,
+                max_workers=1,
                 tx_hashes_filename=transaction_hashes_txt.name,
                 output=logs_csv.name,
             )
