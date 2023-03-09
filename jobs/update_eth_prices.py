@@ -33,7 +33,7 @@ def update_eth_prices(filename):
         date_updated_ouput = str(date_updated.strftime("%Y-%m-%d"))
 
         # Sleep for 5 seconds between API calls to avoid hitting rate limits
-        sleep(5)
+        sleep(10)
 
         # CoinGecko API Request
         url = "https://api.coingecko.com/api/v3/coins/ethereum/history?date={date_updated}".format(
