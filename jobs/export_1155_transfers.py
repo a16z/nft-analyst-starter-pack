@@ -1,15 +1,11 @@
-import ethereumetl
 from web3 import Web3
-import numpy as np
 import pandas as pd
 
 
 def export_1155_transfers(
     start_block,
     end_block,
-    batch_size,
     provider_uri,
-    max_workers,
     tokens,
     output,
 ):
@@ -34,7 +30,7 @@ def export_1155_transfers(
     last_block = end_block
 
     # Single Transfers (ERC-1155)
-    # Filter for topic0 equal to the kecakk-256 hash of TransferSingle(address,address,address,uint256,uint256)
+    # Filter for topic0 equal to the keccak-256 hash of `TransferSingle(address,address,address,uint256,uint256)`
     event_signature_hash = (
         "0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62"
     )
@@ -88,7 +84,7 @@ def export_1155_transfers(
             last_block = int(round(first_block + (last_block - first_block) / 2))
 
     # Batch Transfers (ERC-1155)
-    # Filter for topic0 equal to the kecakk-256 hash of TransferBatch(address,address,address,uint256,uint256)
+    # Filter for topic0 equal to the keccak-256 hash of `TransferBatch(address,address,address,uint256,uint256)`
     event_signature_hash = (
         "0x4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb"
     )
