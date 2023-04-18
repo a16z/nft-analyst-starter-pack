@@ -1,8 +1,8 @@
 import sys
 
 # Check for Python version <= 3.10
-if sys.version_info[0] == 3 and sys.version_info[1] >= 10:
-    raise Exception("Python >=3.10 is not supported at this time.")
+# if sys.version_info[0] == 3 and sys.version_info[1] >= 10:
+#     raise Exception("Python >=3.10 is not supported at this time.")
 
 import asyncio
 import os

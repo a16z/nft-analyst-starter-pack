@@ -36,14 +36,9 @@ def update_block_to_date_mapping(filename, eth_service):
 
         date_range = eth_service.get_block_range_for_date(date_updated_input)
 
-        date_block_mapping = date_block_mapping.append(
-            {
-                "date": date_updated_ouput,
-                "starting_block": date_range[0],
-                "ending_block": date_range[1],
-            },
-            ignore_index=True,
-        )
+        new_dict = {"date": [date_updated_ouput],"starting_block": date_range[0],"ending_block": date_range[1]}
+        new_df =  pd.DataFrame(new_dict)
+        date_block_mapping = pd.concat([date_block_mapping, new_df], ignore_index=True)
 
     date_block_mapping.sort_values(by="date", ascending=True, inplace=True)
 
