@@ -3,7 +3,7 @@ import requests
 from time import sleep
 
 
-def get_nft_sales(end_block, api_key, contract_address, output):
+def get_nft_sales(start_block, end_block, api_key, contract_address, output):
     # Method for fetching NFT sales using Alchemy's getNFTSales endpoint
     print("Fetching NFT sales...")
 
@@ -14,14 +14,16 @@ def get_nft_sales(end_block, api_key, contract_address, output):
     # Loop through collection using pagination tokens until complete
     while process_active:
         if not page_key:
-            alchemy_url = "https://eth-mainnet.g.alchemy.com/nft/v2/{api_key}/getNFTSales?fromBlock=0&toBlock={end_block}&order=asc&contractAddress={contract_address}".format(
+            alchemy_url = "https://eth-mainnet.g.alchemy.com/nft/v2/{api_key}/getNFTSales?fromBlock={start_block}&toBlock={end_block}&order=asc&contractAddress={contract_address}".format(
                 api_key=api_key,
+                start_block=start_block,
                 end_block=end_block,
                 contract_address=contract_address,
             )
         else:
-            alchemy_url = "https://eth-mainnet.g.alchemy.com/nft/v2/{api_key}/getNFTSales?fromBlock=0&toBlock={end_block}&order=asc&contractAddress={contract_address}&pageKey={page_key}".format(
+            alchemy_url = "https://eth-mainnet.g.alchemy.com/nft/v2/{api_key}/getNFTSales?fromBlock={start_block}&toBlock={end_block}&order=asc&contractAddress={contract_address}&pageKey={page_key}".format(
                 api_key=api_key,
+                start_block=start_block,
                 end_block=end_block,
                 contract_address=contract_address,
                 page_key=page_key,
@@ -57,20 +59,33 @@ def get_nft_sales(end_block, api_key, contract_address, output):
                             taker = sale["sellerAddress"]
                             maker = sale["buyerAddress"]
                         
-                        if sale["sellerFee"]["tokenAddress"] in ("0x0000000000000000000000000000000000000000","0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"):
-                            seller_fee = float(sale["sellerFee"]["amount"]) / 10**18
-                        else:
+                        try:
+                            # Trade currency must be ETH, WETH, or Blur Pool Token
+                            if sale["sellerFee"]["tokenAddress"] in ("0x0000000000000000000000000000000000000000","0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0x0000000000a39bb272e79075ade125fd351887ac"):
+                                seller_fee = float(sale["sellerFee"]["amount"]) / 10**18
+                            else:
+                                seller_fee = 0
+                        except:
                             seller_fee = 0
 
-                        if sale["protocolFee"]["tokenAddress"] in ("0x0000000000000000000000000000000000000000","0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"):
-                            protocol_fee = float(sale["protocolFee"]["amount"]) / 10**18
-                        else:
+                        try:
+                            # Trade currency must be ETH, WETH, or Blur Pool Token
+                            if sale["protocolFee"]["tokenAddress"] in ("0x0000000000000000000000000000000000000000","0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0x0000000000a39bb272e79075ade125fd351887ac"):
+                                protocol_fee = float(sale["protocolFee"]["amount"]) / 10**18
+                            else:
+                                protocol_fee = 0
+                        except:
                             protocol_fee = 0
 
-                        if sale["royaltyFee"]["tokenAddress"] in ("0x0000000000000000000000000000000000000000","0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"):
-                            royalty_fee = float(sale["royaltyFee"]["amount"]) / 10**18
-                        else:
-                            royalty_fee = 0        
+                        try:
+                            # Trade currency must be ETH, WETH, or Blur Pool Token
+                            if sale["royaltyFee"]["tokenAddress"] in ("0x0000000000000000000000000000000000000000","0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0x0000000000a39bb272e79075ade125fd351887ac"):
+                                royalty_fee = float(sale["royaltyFee"]["amount"]) / 10**18
+                            else:
+                                royalty_fee = 0
+                        except:
+                            royalty_fee = 0
+                            
                         quantity = sale["quantity"]          
 
                         nft_sales_dict = {

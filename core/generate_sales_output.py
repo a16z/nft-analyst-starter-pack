@@ -28,8 +28,14 @@ def generate_sales_output(
     sales_df = sales_df.merge(eth_prices_df, on="date", how="left")
 
     # Calculate USD sale price based on ETH price
-    sales_df["sale_price_eth"] = sales_df["seller_fee"]
+    sales_df["sale_price_eth"] = sales_df["seller_fee"]+sales_df["royalty_fee"]+sales_df["protocol_fee"]
     sales_df["sale_price_usd"] = sales_df["sale_price_eth"] * sales_df["price_of_eth"]
+
+    # Calculate USD protocol fee and royalty fee
+    sales_df["protocol_fee_eth"] = sales_df["protocol_fee"]
+    sales_df["protocol_fee_usd"] = sales_df["protocol_fee_eth"] * sales_df["price_of_eth"]
+    sales_df["royalty_fee_eth"] = sales_df["royalty_fee"]
+    sales_df["royalty_fee_usd"] = sales_df["royalty_fee_eth"] * sales_df["price_of_eth"]
 
     # Clean up dataframe for output
     sales_df = sales_df[
@@ -45,8 +51,10 @@ def generate_sales_output(
             "taker",
             "sale_price_eth",
             "sale_price_usd",
-            "protocol_fee",
-            "royalty_fee",
+            "protocol_fee_eth",
+            "protocol_fee_usd",
+            "royalty_fee_eth",
+            "royalty_fee_usd",
             "quantity",
         ]
     ]

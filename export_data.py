@@ -153,6 +153,7 @@ def export_data(contract_address, alchemy_api_key):
         with contextlib.redirect_stderr(None):
             # Export sales
             get_nft_sales(
+                start_block=start_block,
                 end_block=end_block,
                 api_key=alchemy_api_key,
                 contract_address=contract_address,
