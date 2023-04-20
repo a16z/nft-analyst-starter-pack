@@ -4,7 +4,6 @@ import sys
 # if sys.version_info[0] == 3 and sys.version_info[1] >= 10:
 #     raise Exception("Python >=3.10 is not supported at this time.")
 
-import os
 import sys
 import tempfile
 import warnings
@@ -22,10 +21,9 @@ from core.generate_sales_output import generate_sales_output
 from core.generate_transfers_output import generate_transfers_output
 from jobs.export_update_logs import export_update_logs
 from jobs.get_recent_block import get_recent_block
-from jobs.export_token_transfers import export_token_transfers
-from jobs.export_1155_transfers import export_1155_transfers
 from jobs.get_nft_metadata import get_metadata_for_collection
 from jobs.get_nft_sales import get_nft_sales
+from jobs.get_nft_transfers import get_nft_transfers
 from jobs.update_block_to_date_mapping import update_block_to_date_mapping
 from jobs.update_eth_prices import update_eth_prices
 from jobs.cleanup_outputs import clean_up_outputs
@@ -81,8 +79,6 @@ def export_data(contract_address, alchemy_api_key):
     provider_uri = "https://eth-mainnet.alchemyapi.io/v2/" + alchemy_api_key
     web3 = Web3(Web3.HTTPProvider(provider_uri))
     eth_service = EthService(web3)
-    ethereum_etl_batch_size = 1000
-    ethereum_etl_max_workers = 3
 
     # Get block range
     # If update logs exist, read from the saved file and set the start block
@@ -101,55 +97,22 @@ def export_data(contract_address, alchemy_api_key):
         delete=False
     ) as nft_sales_csv, tempfile.NamedTemporaryFile(
         delete=False
-    ) as transaction_hashes_txt, tempfile.NamedTemporaryFile(
+    ) as nft_transfers_csv, tempfile.NamedTemporaryFile(
         delete=False
-    ) as token_ids_txt, tempfile.NamedTemporaryFile(
-        delete=False
-    ) as all_token_ids_txt,tempfile.NamedTemporaryFile(
+    ) as all_token_ids_txt, tempfile.NamedTemporaryFile(
         delete=False
     ) as raw_attributes_csv:
 
         with contextlib.redirect_stderr(None):
-            # Export token transfers
-            export_token_transfers(
+            # Export transfers
+            get_nft_transfers(
                 start_block=start_block,
                 end_block=end_block,
-                batch_size=ethereum_etl_batch_size,
-                provider_uri=provider_uri,
-                max_workers=ethereum_etl_max_workers,
-                tokens=contract_address,
-                output=transfers_csv,
+                api_key=alchemy_api_key,
+                contract_address=contract_address,
+                output=nft_transfers_csv.name,
             )
-
-        # If there are no 721 transfers, export 1155 transfers
-        if os.stat(transfers_csv).st_size == 0:
-            print(
-                "No ERC-721 transfers were identified.",
-                "Therefore, searching for and extracting any ERC-1155 transfers.",
-            )
-            export_1155_transfers(
-                start_block=start_block,
-                end_block=end_block,
-                batch_size=ethereum_etl_batch_size,
-                provider_uri=provider_uri,
-                max_workers=ethereum_etl_max_workers,
-                tokens=contract_address,
-                output=transfers_csv,
-            )
-
-        # Create staging files
-        extract_unique_column_value(
-            input_filename=transfers_csv,
-            output_filename=transaction_hashes_txt.name,
-            column="transaction_hash",
-        )
-
-        extract_unique_column_value(
-            input_filename=transfers_csv,
-            output_filename=token_ids_txt.name,
-            column="value",
-        )
-
+  
         with contextlib.redirect_stderr(None):
             # Export sales
             get_nft_sales(
@@ -178,7 +141,7 @@ def export_data(contract_address, alchemy_api_key):
 
         # Generate transfers output
         generate_transfers_output(
-            transfers_file=transfers_csv,
+            transfers_file=nft_transfers_csv.name,
             date_block_mapping_file=date_block_mapping_csv,
             output=transfers_csv,
         )

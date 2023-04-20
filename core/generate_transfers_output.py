@@ -19,38 +19,23 @@ def generate_transfers_output(transfers_file, date_block_mapping_file, output):
     )
 
     # Clean up dataframe for output
-    transfers_df = transfers_df.rename(columns={"value": "asset_id"})
     transfers_df = transfers_df.sort_values(
         by=["block_number", "log_index"], ascending=[False, True]
     )
 
-    if (
-        "num_tokens" in transfers_df.columns
-    ):  # ERC-1555 transfers; include num_tokens field
-        transfers_df = transfers_df[
-            [
-                "transaction_hash",
-                "block_number",
-                "date",
-                "asset_id",
-                "from_address",
-                "to_address",
-                "num_tokens",
-                "log_index",
-            ]
+    # ERC-721 transfers; exclude num_tokens field
+    transfers_df = transfers_df[
+        [
+            "transaction_hash",
+            "block_number",
+            "date",
+            "asset_id",
+            "from_address",
+            "to_address",
+            "value",
+            "log_index",
         ]
-    else:  # ERC-721 transfers; exclude num_tokens field
-        transfers_df = transfers_df[
-            [
-                "transaction_hash",
-                "block_number",
-                "date",
-                "asset_id",
-                "from_address",
-                "to_address",
-                "log_index",
-            ]
-        ]
+    ]
 
     # Output transfers data to CSV file
     transfers_df.to_csv(output, index=False)
