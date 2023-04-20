@@ -1,4 +1,3 @@
-import ethereumetl
 from web3 import Web3
 import numpy as np
 import pandas as pd

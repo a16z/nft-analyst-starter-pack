@@ -1,8 +1,6 @@
-import json
 from datetime import datetime, timedelta
 from time import sleep
 
-import ethereumetl
 import httpx
 import numpy as np
 import pandas as pd

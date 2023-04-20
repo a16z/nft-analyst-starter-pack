@@ -1,7 +1,3 @@
-import asyncio
-
-import httpx
-import numpy as np
 import pandas as pd
 import requests
 from time import sleep

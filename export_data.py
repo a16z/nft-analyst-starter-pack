@@ -4,7 +4,6 @@ import sys
 # if sys.version_info[0] == 3 and sys.version_info[1] >= 10:
 #     raise Exception("Python >=3.10 is not supported at this time.")
 
-import asyncio
 import os
 import sys
 import tempfile
@@ -13,7 +12,6 @@ from datetime import datetime, timedelta
 import contextlib
 
 import click
-import ethereumetl
 import numpy as np
 import pandas as pd
 from ethereumetl.service.eth_service import EthService
@@ -22,12 +20,12 @@ from web3 import Web3
 from core.generate_metadata_output import generate_metadata_output
 from core.generate_sales_output import generate_sales_output
 from core.generate_transfers_output import generate_transfers_output
-from jobs.export_logs import export_logs
 from jobs.export_update_logs import export_update_logs
 from jobs.get_recent_block import get_recent_block
 from jobs.export_token_transfers import export_token_transfers
 from jobs.export_1155_transfers import export_1155_transfers
 from jobs.get_nft_metadata import get_metadata_for_collection
+from jobs.get_nft_sales import get_nft_sales
 from jobs.update_block_to_date_mapping import update_block_to_date_mapping
 from jobs.update_eth_prices import update_eth_prices
 from jobs.cleanup_outputs import clean_up_outputs
@@ -101,7 +99,7 @@ def export_data(contract_address, alchemy_api_key):
     # Create tempfiles
     with tempfile.NamedTemporaryFile(
         delete=False
-    ) as logs_csv, tempfile.NamedTemporaryFile(
+    ) as nft_sales_csv, tempfile.NamedTemporaryFile(
         delete=False
     ) as transaction_hashes_txt, tempfile.NamedTemporaryFile(
         delete=False
@@ -153,15 +151,12 @@ def export_data(contract_address, alchemy_api_key):
         )
 
         with contextlib.redirect_stderr(None):
-            # Export logs
-            export_logs(
-                start_block=start_block,
+            # Export sales
+            get_nft_sales(
                 end_block=end_block,
-                batch_size=5,
-                provider_uri=provider_uri,
-                max_workers=1,
-                tx_hashes_filename=transaction_hashes_txt.name,
-                output=logs_csv.name,
+                api_key=alchemy_api_key,
+                contract_address=contract_address,
+                output=nft_sales_csv.name,
             )
 
         # Update date block mapping
@@ -174,8 +169,7 @@ def export_data(contract_address, alchemy_api_key):
 
         # Generate sales output
         generate_sales_output(
-            transfers_file=transfers_csv,
-            logs_file=logs_csv.name,
+            sales_file=nft_sales_csv.name,
             date_block_mapping_file=date_block_mapping_csv,
             eth_prices_file=eth_prices_csv,
             output=sales_csv,
