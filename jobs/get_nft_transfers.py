@@ -67,10 +67,16 @@ def get_nft_transfers(start_block, end_block, api_key, contract_address, output)
                         
                         transaction_hash = transfer["hash"]
                         block_number = int(transfer["blockNum"],16)
-                        asset_id = int(transfer["tokenId"],16)
+
+                        if transfer["category"] == "erc1155":
+                            asset_id = int(transfer["erc1155Metadata"][0]["tokenId"],16)
+                            value = int(transfer["erc1155Metadata"][0]["value"],16)
+                        else:
+                            asset_id = int(transfer["erc721TokenId"],16)
+                            value = 1
+
                         from_address = transfer["from"]
                         to_address = transfer["to"]
-                        value = transfer["value"]
                         log_index_substr = len(transfer["uniqueId"])-71
                         log_index = transfer["uniqueId"][-log_index_substr:]
 

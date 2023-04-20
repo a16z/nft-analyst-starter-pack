@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 
-import ethereumetl
 import numpy as np
 import pandas as pd
 from ethereumetl.service.eth_service import EthService

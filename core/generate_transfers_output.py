@@ -32,8 +32,8 @@ def generate_transfers_output(transfers_file, date_block_mapping_file, output):
             "asset_id",
             "from_address",
             "to_address",
-            "value",
             "log_index",
+            "value"
         ]
     ]
 
