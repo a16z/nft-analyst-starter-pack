@@ -22,8 +22,6 @@ python export_data.py --alchemy-api-key YourAPIKey --contract-address 0xED5AF388
 
 The first argument is your Alchemy API key and the second argument is the contract address of the NFT collection you want to export (the example provided is Azuki).
 
-
-
 ### End-to-End Example
 
 ```bash
@@ -43,18 +41,19 @@ The data outputs are stored as three CSV files:
 
 |transaction_hash                                                  |block_number|date   |asset_id|from_address                              |to_address                                |log_index|value|
 |------------------------------------------------------------------|------------|-------|--------|------------------------------------------|------------------------------------------|---------|-----|
-|0x39980d28ed5f3e425d51c6058b0dd9863dccb5815f9a17b121e712fb86eac8f2|17083912    |4/19/23|9680    |0xf89dc311f1e0ce66e6417c76db27c2cfdefd623e|0x62e724226009de1edb66b8b8be841781aeb256de|392      |1    |
-|0xcd9abacb78fbc7ec917d1af739bbc9d15d906df457dac15fb872f63ea07480ae|17083909    |4/19/23|7216    |0x5c2d0ed909d7c5c67fd5ef1d62d508e19bf56820|0xf7677dadb97a99f971e405650cd8bdda10e72dfa|175      |1    |
-|0xf1da2018726cdf691d2d6d1d99cc5485052998f0feff27ef61e4aeee79b08519|17083904    |4/19/23|9279    |0x28f597801cbe0c7ad1890807ef5c539fc002476a|0x0916ff4ec43798e02d6c77383be0ebb0b41f7595|393      |1    |
+|0xda1c66592b56293d37b16b4c72222e6c2ea8768db8480860132ad9b0d723c719|17090650    |4/20/23|1200    |0x29c0f446b983d002a8d110aee7e904426da5327f|0x7d88f221e9ecef9eef118e0d0e8a47f81b37e0b6|178      |1    |
+|0xe9cc5b02af90369061dcf42cd696c30bd0ef4e378d88400645322eb65dc51f03|17090502    |4/20/23|4693    |0xeecba4834ca010c0ced9b2ed8b7050f5229667b8|0x53bf035f62f27dd99f8afc867abf328c218aaa03|439      |1    |
+|0x1d87dbb54ee80ff34a775412db433b5d6ce3b3c40153345b53c9acb234be67e8|17090095    |4/20/23|5406    |0x703229ec1005fba3108883b8a094ea206fc1e161|0xe52cec0e90115abeb3304baa36bc2655731f7934|364      |1    |
 
 
 [sales_0x---.csv](https://github.com/a16z/nft-analyst-starter-pack/blob/main/sales_0xED5AF388653567Af2F388E6224dC7C4b3241C544.csv)
 
 |transaction_hash                                                  |block_number|date   |asset_id|marketplace|seller                                    |buyer                                     |maker                                     |taker                                     |sale_price_eth|sale_price_usd|protocol_fee_eth|protocol_fee_usd|royalty_fee_eth|royalty_fee_usd|quantity|
 |------------------------------------------------------------------|------------|-------|--------|-----------|------------------------------------------|------------------------------------------|------------------------------------------|------------------------------------------|--------------|--------------|----------------|----------------|---------------|---------------|--------|
-|0x39980d28ed5f3e425d51c6058b0dd9863dccb5815f9a17b121e712fb86eac8f2|17083912    |4/19/23|9680    |blur       |0xf89dc311f1e0ce66e6417c76db27c2cfdefd623e|0x62e724226009de1edb66b8b8be841781aeb256de|0x62e724226009de1edb66b8b8be841781aeb256de|0xf89dc311f1e0ce66e6417c76db27c2cfdefd623e|15.21         |31990.87075   |0               |0               |0.07605        |159.9543538    |1       |
-|0xcd9abacb78fbc7ec917d1af739bbc9d15d906df457dac15fb872f63ea07480ae|17083909    |4/19/23|7216    |blur       |0x5c2d0ed909d7c5c67fd5ef1d62d508e19bf56820|0xf7677dadb97a99f971e405650cd8bdda10e72dfa|0xf7677dadb97a99f971e405650cd8bdda10e72dfa|0x5c2d0ed909d7c5c67fd5ef1d62d508e19bf56820|15.3          |32180.16585   |0               |0               |0.0765         |160.9008292    |1       |
-|0xf1da2018726cdf691d2d6d1d99cc5485052998f0feff27ef61e4aeee79b08519|17083904    |4/19/23|9279    |blur       |0x28f597801cbe0c7ad1890807ef5c539fc002476a|0x0916ff4ec43798e02d6c77383be0ebb0b41f7595|0x0916ff4ec43798e02d6c77383be0ebb0b41f7595|0x28f597801cbe0c7ad1890807ef5c539fc002476a|15.35         |32285.32979   |0               |0               |0.07675        |161.4266489    |1       |
+|0xda1c66592b56293d37b16b4c72222e6c2ea8768db8480860132ad9b0d723c719|17090650    |4/20/23|1200    |blur       |0x29c0f446b983d002a8d110aee7e904426da5327f|0x7d88f221e9ecef9eef118e0d0e8a47f81b37e0b6|0x29c0f446b983d002a8d110aee7e904426da5327f|0x7d88f221e9ecef9eef118e0d0e8a47f81b37e0b6|16.29         |31544.37825   |0               |0               |0.08145        |157.7218912    |1       |
+|0xe9cc5b02af90369061dcf42cd696c30bd0ef4e378d88400645322eb65dc51f03|17090502    |4/20/23|4693    |seaport    |0xeecba4834ca010c0ced9b2ed8b7050f5229667b8|0x53bf035f62f27dd99f8afc867abf328c218aaa03|0x53bf035f62f27dd99f8afc867abf328c218aaa03|0xeecba4834ca010c0ced9b2ed8b7050f5229667b8|17.7375       |34347.35477   |0.4125          |798.7756923     |0.825          |1597.551385    |1       |
+|0xbdb62c189c11ca8e16c8c56a41ffad2e27875407aabdf1c8fd3cb9cc505966cf|17089646    |4/20/23|8516    |blur       |0xdc2d12cdefe1b3b9060692a5d47015d219286077|0xfa89ec40699bbfd749c4eb6643dc2b22ff0e2aa6|0xdc2d12cdefe1b3b9060692a5d47015d219286077|0xfa89ec40699bbfd749c4eb6643dc2b22ff0e2aa6|15.16         |29356.21696   |0               |0               |0.758          |1467.810848    |1       |
+
 
 
 [metadata_0x---.csv](https://github.com/a16z/nft-analyst-starter-pack/blob/main/metadata_0xED5AF388653567Af2F388E6224dC7C4b3241C544.csv)
@@ -78,7 +77,7 @@ The script can take up to ~5 minutes to run, depending on the contract's deploym
 
 (2) Only compatible with collections supported by Alchemy's NFT API
 
-(3) Only includes sales denominated in ETH/WETH.
+(3) Only includes sales denominated in ETH/WETH
 
 (4) ETH/USD prices are only tracked at a daily granularity
 
