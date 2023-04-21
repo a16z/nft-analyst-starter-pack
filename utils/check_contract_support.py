@@ -1,4 +1,4 @@
-import httpx
+import requests
 
 
 def check_contract_support(alchemy_api_key, contract_address):
@@ -10,7 +10,7 @@ def check_contract_support(alchemy_api_key, contract_address):
     headers = {
         "Accept": "application/json",
     }
-    r = httpx.get(alchemy_url, headers=headers)
+    r = requests.get(alchemy_url, headers=headers)
     j = r.json()
     contract_check = j["id"]["tokenMetadata"]["tokenType"]
 

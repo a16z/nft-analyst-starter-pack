@@ -33,7 +33,7 @@ def generate_transfers_output(transfers_file, date_block_mapping_file, output):
             "from_address",
             "to_address",
             "log_index",
-            "value"
+            "value",
         ]
     ]
 

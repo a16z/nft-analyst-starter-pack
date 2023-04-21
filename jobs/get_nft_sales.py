@@ -7,7 +7,22 @@ def get_nft_sales(start_block, end_block, api_key, contract_address, output):
     # Method for fetching NFT sales using Alchemy's getNFTSales endpoint
     print("Fetching NFT sales...")
 
-    nft_sales = pd.DataFrame(columns=["transaction_hash", "block_number", "asset_id","marketplace","seller","buyer","maker","taker","seller_fee","protocol_fee","royalty_fee","quantity"])
+    nft_sales = pd.DataFrame(
+        columns=[
+            "transaction_hash",
+            "block_number",
+            "asset_id",
+            "marketplace",
+            "seller",
+            "buyer",
+            "maker",
+            "taker",
+            "seller_fee",
+            "protocol_fee",
+            "royalty_fee",
+            "quantity",
+        ]
+    )
     page_key = None
     process_active = True
 
@@ -43,26 +58,46 @@ def get_nft_sales(start_block, end_block, api_key, contract_address, output):
                 sales = j["nftSales"]
                 for sale in sales:
                     try:
+                        nft_sales_df = pd.DataFrame(
+                            columns=[
+                                "transaction_hash",
+                                "block_number",
+                                "asset_id",
+                                "marketplace",
+                                "seller",
+                                "buyer",
+                                "maker",
+                                "taker",
+                                "seller_fee",
+                                "protocol_fee",
+                                "royalty_fee",
+                                "quantity",
+                            ]
+                        )
 
-                        nft_sales_df = pd.DataFrame(columns=["transaction_hash", "block_number", "asset_id","marketplace","seller","buyer","maker","taker","seller_fee","protocol_fee","royalty_fee","quantity"])
-                        
                         transaction_hash = sale["transactionHash"]
                         block_number = sale["blockNumber"]
                         asset_id = sale["tokenId"]
                         marketplace = sale["marketplace"]
                         seller = sale["sellerAddress"]
                         buyer = sale["buyerAddress"]
-                        if (sale["taker"] == "BUYER"):
+                        if sale["taker"] == "BUYER":
                             taker = sale["buyerAddress"]
                             maker = sale["sellerAddress"]
                         else:
                             taker = sale["sellerAddress"]
                             maker = sale["buyerAddress"]
-                        
+
                         try:
                             # Trade currency must be ETH, WETH, or Blur Pool Token
-                            if sale["sellerFee"]["tokenAddress"] in ("0x0000000000000000000000000000000000000000","0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0x0000000000a39bb272e79075ade125fd351887ac"):
-                                seller_fee = float(sale["sellerFee"]["amount"]) / 10**18
+                            if sale["sellerFee"]["tokenAddress"] in (
+                                "0x0000000000000000000000000000000000000000",
+                                "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+                                "0x0000000000a39bb272e79075ade125fd351887ac",
+                            ):
+                                seller_fee = (
+                                    float(sale["sellerFee"]["amount"]) / 10**18
+                                )
                             else:
                                 seller_fee = 0
                         except:
@@ -70,8 +105,14 @@ def get_nft_sales(start_block, end_block, api_key, contract_address, output):
 
                         try:
                             # Trade currency must be ETH, WETH, or Blur Pool Token
-                            if sale["protocolFee"]["tokenAddress"] in ("0x0000000000000000000000000000000000000000","0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0x0000000000a39bb272e79075ade125fd351887ac"):
-                                protocol_fee = float(sale["protocolFee"]["amount"]) / 10**18
+                            if sale["protocolFee"]["tokenAddress"] in (
+                                "0x0000000000000000000000000000000000000000",
+                                "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+                                "0x0000000000a39bb272e79075ade125fd351887ac",
+                            ):
+                                protocol_fee = (
+                                    float(sale["protocolFee"]["amount"]) / 10**18
+                                )
                             else:
                                 protocol_fee = 0
                         except:
@@ -79,33 +120,41 @@ def get_nft_sales(start_block, end_block, api_key, contract_address, output):
 
                         try:
                             # Trade currency must be ETH, WETH, or Blur Pool Token
-                            if sale["royaltyFee"]["tokenAddress"] in ("0x0000000000000000000000000000000000000000","0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0x0000000000a39bb272e79075ade125fd351887ac"):
-                                royalty_fee = float(sale["royaltyFee"]["amount"]) / 10**18
+                            if sale["royaltyFee"]["tokenAddress"] in (
+                                "0x0000000000000000000000000000000000000000",
+                                "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+                                "0x0000000000a39bb272e79075ade125fd351887ac",
+                            ):
+                                royalty_fee = (
+                                    float(sale["royaltyFee"]["amount"]) / 10**18
+                                )
                             else:
                                 royalty_fee = 0
                         except:
                             royalty_fee = 0
-                            
-                        quantity = sale["quantity"]          
+
+                        quantity = sale["quantity"]
 
                         nft_sales_dict = {
-                        "transaction_hash": [transaction_hash],
-                        "block_number": [block_number],
-                        "asset_id": [asset_id],
-                        "marketplace": [marketplace],
-                        "seller": [seller],
-                        "buyer": [buyer],
-                        "maker": [maker],
-                        "taker": [taker],
-                        "seller_fee": [seller_fee],
-                        "protocol_fee": [protocol_fee],
-                        "royalty_fee": [royalty_fee],
-                        "quantity":[quantity]
+                            "transaction_hash": [transaction_hash],
+                            "block_number": [block_number],
+                            "asset_id": [asset_id],
+                            "marketplace": [marketplace],
+                            "seller": [seller],
+                            "buyer": [buyer],
+                            "maker": [maker],
+                            "taker": [taker],
+                            "seller_fee": [seller_fee],
+                            "protocol_fee": [protocol_fee],
+                            "royalty_fee": [royalty_fee],
+                            "quantity": [quantity],
                         }
 
-                        nft_sales_df =  pd.DataFrame(nft_sales_dict)
-                        nft_sales = pd.concat([nft_sales, nft_sales_df], ignore_index=True)
-                        
+                        nft_sales_df = pd.DataFrame(nft_sales_dict)
+                        nft_sales = pd.concat(
+                            [nft_sales, nft_sales_df], ignore_index=True
+                        )
+
                     except:
                         continue
 

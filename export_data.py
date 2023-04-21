@@ -1,10 +1,4 @@
 import sys
-
-# Check for Python version <= 3.10
-# if sys.version_info[0] == 3 and sys.version_info[1] >= 10:
-#     raise Exception("Python >=3.10 is not supported at this time.")
-
-import sys
 import tempfile
 import warnings
 from datetime import datetime, timedelta
@@ -48,12 +42,11 @@ from utils.extract_unique_column_value import extract_unique_column_value
     help="The contract address of the desired NFT collection.",
 )
 def export_data(contract_address, alchemy_api_key):
-
     if (alchemy_api_key is None) or (alchemy_api_key == ""):
         raise Exception("Alchemy API key is required.")
 
     # Convert address to checksummed address (a specific pattern of uppercase and lowercase letters)
-    contract_address = Web3.toChecksumAddress(contract_address)
+    contract_address = Web3.to_checksum_address(contract_address)
 
     # Check if contract address is supported by Alchemy
     check_contract_support(
@@ -102,7 +95,6 @@ def export_data(contract_address, alchemy_api_key):
     ) as all_token_ids_txt, tempfile.NamedTemporaryFile(
         delete=False
     ) as raw_attributes_csv:
-
         with contextlib.redirect_stderr(None):
             # Export transfers
             get_nft_transfers(
@@ -112,7 +104,7 @@ def export_data(contract_address, alchemy_api_key):
                 contract_address=contract_address,
                 output=nft_transfers_csv.name,
             )
-  
+
         with contextlib.redirect_stderr(None):
             # Export sales
             get_nft_sales(

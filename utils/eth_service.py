@@ -8,6 +8,7 @@ def pairwise(iterable):
     next(b, None)
     return zip(a, b)
 
+
 class GraphOperations(object):
     def __init__(self, graph):
         """x axis on the graph must be integers, y value must increase strictly monotonically with increase of x"""
@@ -16,7 +17,8 @@ class GraphOperations(object):
 
     def get_bounds_for_y_coordinate(self, y):
         """given the y coordinate, outputs a pair of x coordinates for closest points that bound the y coordinate.
-        Left and right bounds are equal in case given y is equal to one of the points y coordinate"""
+        Left and right bounds are equal in case given y is equal to one of the points y coordinate
+        """
         initial_bounds = find_best_bounds(y, self._cached_points)
         if initial_bounds is None:
             initial_bounds = self._get_first_point(), self._get_last_point()
@@ -26,7 +28,11 @@ class GraphOperations(object):
 
     def _get_bounds_for_y_coordinate_recursive(self, y, start, end):
         if y < start.y or y > end.y:
-            raise OutOfBoundsError('y coordinate {} is out of bounds for points {}-{}'.format(y, start, end))
+            raise OutOfBoundsError(
+                "y coordinate {} is out of bounds for points {}-{}".format(
+                    y, start, end
+                )
+            )
 
         if y == start.y:
             return start.x, start.x
@@ -37,7 +43,7 @@ class GraphOperations(object):
         else:
             assert start.y < y < end.y
             if start.y >= end.y:
-                raise ValueError('y must increase strictly monotonically')
+                raise ValueError("y must increase strictly monotonically")
 
             # Interpolation Search https://en.wikipedia.org/wiki/Interpolation_search, O(log(log(n)) average case.
             # Improvements for worst case:
@@ -66,7 +72,11 @@ class GraphOperations(object):
 
             bounds = find_best_bounds(y, all_points)
             if bounds is None:
-                raise ValueError('Unable to find bounds for points {} and y coordinate {}'.format(points, y))
+                raise ValueError(
+                    "Unable to find bounds for points {} and y coordinate {}".format(
+                        points, y
+                    )
+                )
 
             return self._get_bounds_for_y_coordinate_recursive(y, *bounds)
 
@@ -98,7 +108,9 @@ def interpolate(point1, point2, y):
     x1, y1 = point1.x, point1.y
     x2, y2 = point2.x, point2.y
     if y1 == y2:
-        raise ValueError('The y coordinate for points is the same {}, {}'.format(point1, point2))
+        raise ValueError(
+            "The y coordinate for points is the same {}, {}".format(point1, point2)
+        )
     x = int((y - y1) * (x2 - x1) / (y2 - y1) + x1)
     return x
 
@@ -125,10 +137,11 @@ class Point(object):
         self.y = y
 
     def __str__(self):
-        return '({},{})'.format(self.x, self.y)
+        return "({},{})".format(self.x, self.y)
 
     def __repr__(self):
-        return 'Point({},{})'.format(self.x, self.y)
+        return "Point({},{})".format(self.x, self.y)
+
 
 class EthService(object):
     def __init__(self, web3):
@@ -136,28 +149,45 @@ class EthService(object):
         self._graph_operations = GraphOperations(graph)
 
     def get_block_range_for_date(self, date):
-        start_datetime = datetime.combine(date, datetime.min.time().replace(tzinfo=timezone.utc))
-        end_datetime = datetime.combine(date, datetime.max.time().replace(tzinfo=timezone.utc))
-        return self.get_block_range_for_timestamps(start_datetime.timestamp(), end_datetime.timestamp())
+        start_datetime = datetime.combine(
+            date, datetime.min.time().replace(tzinfo=timezone.utc)
+        )
+        end_datetime = datetime.combine(
+            date, datetime.max.time().replace(tzinfo=timezone.utc)
+        )
+        return self.get_block_range_for_timestamps(
+            start_datetime.timestamp(), end_datetime.timestamp()
+        )
 
     def get_block_range_for_timestamps(self, start_timestamp, end_timestamp):
         start_timestamp = int(start_timestamp)
         end_timestamp = int(end_timestamp)
         if start_timestamp > end_timestamp:
-            raise ValueError('start_timestamp must be greater or equal to end_timestamp')
+            raise ValueError(
+                "start_timestamp must be greater or equal to end_timestamp"
+            )
 
         try:
-            start_block_bounds = self._graph_operations.get_bounds_for_y_coordinate(start_timestamp)
+            start_block_bounds = self._graph_operations.get_bounds_for_y_coordinate(
+                start_timestamp
+            )
         except OutOfBoundsError:
             start_block_bounds = (0, 0)
 
         try:
-            end_block_bounds = self._graph_operations.get_bounds_for_y_coordinate(end_timestamp)
+            end_block_bounds = self._graph_operations.get_bounds_for_y_coordinate(
+                end_timestamp
+            )
         except OutOfBoundsError as e:
-            raise OutOfBoundsError('The existing blocks do not completely cover the given time range') from e
+            raise OutOfBoundsError(
+                "The existing blocks do not completely cover the given time range"
+            ) from e
 
-        if start_block_bounds == end_block_bounds and start_block_bounds[0] != start_block_bounds[1]:
-            raise ValueError('The given timestamp range does not cover any blocks')
+        if (
+            start_block_bounds == end_block_bounds
+            and start_block_bounds[0] != start_block_bounds[1]
+        ):
+            raise ValueError("The given timestamp range does not cover any blocks")
 
         start_block = start_block_bounds[1]
         end_block = end_block_bounds[0]
@@ -168,19 +198,20 @@ class EthService(object):
 
         return start_block, end_block
 
+
 class BlockTimestampGraph(object):
     def __init__(self, web3):
         self._web3 = web3
 
     def get_first_point(self):
         # Ignore the genesis block as its timestamp is 0
-        return block_to_point(self._web3.eth.getBlock(1))
+        return block_to_point(self._web3.eth.get_block(1))
 
     def get_last_point(self):
-        return block_to_point(self._web3.eth.getBlock('latest'))
+        return block_to_point(self._web3.eth.get_block("latest"))
 
     def get_point(self, x):
-        return block_to_point(self._web3.eth.getBlock(x))
+        return block_to_point(self._web3.eth.get_block(x))
 
 
 def block_to_point(block):

@@ -4,12 +4,9 @@ import pandas as pd
 pd.options.mode.chained_assignment = None
 
 
-def generate_sales_output(
-    sales_file, date_block_mapping_file, eth_prices_file, output
-):
-
+def generate_sales_output(sales_file, date_block_mapping_file, eth_prices_file, output):
     sales_df = pd.read_csv(sales_file)
-    
+
     # Read date block mapping and ETH prices from files
     date_blocks_df = pd.read_csv(date_block_mapping_file)
     eth_prices_df = pd.read_csv(eth_prices_file)
@@ -28,12 +25,16 @@ def generate_sales_output(
     sales_df = sales_df.merge(eth_prices_df, on="date", how="left")
 
     # Calculate USD sale price based on ETH price
-    sales_df["sale_price_eth"] = sales_df["seller_fee"]+sales_df["royalty_fee"]+sales_df["protocol_fee"]
+    sales_df["sale_price_eth"] = (
+        sales_df["seller_fee"] + sales_df["royalty_fee"] + sales_df["protocol_fee"]
+    )
     sales_df["sale_price_usd"] = sales_df["sale_price_eth"] * sales_df["price_of_eth"]
 
     # Calculate USD protocol fee and royalty fee
     sales_df["protocol_fee_eth"] = sales_df["protocol_fee"]
-    sales_df["protocol_fee_usd"] = sales_df["protocol_fee_eth"] * sales_df["price_of_eth"]
+    sales_df["protocol_fee_usd"] = (
+        sales_df["protocol_fee_eth"] * sales_df["price_of_eth"]
+    )
     sales_df["royalty_fee_eth"] = sales_df["royalty_fee"]
     sales_df["royalty_fee_usd"] = sales_df["royalty_fee_eth"] * sales_df["price_of_eth"]
 

@@ -45,7 +45,9 @@ def get_metadata_for_collection(api_key, contract_address, output):
                         attributes_df = attributes_df[
                             ["value", "trait_type", "asset_id"]
                         ]
-                        raw_attributes = pd.concat([raw_attributes, attributes_df], ignore_index=True)
+                        raw_attributes = pd.concat(
+                            [raw_attributes, attributes_df], ignore_index=True
+                        )
 
                     except:
                         continue

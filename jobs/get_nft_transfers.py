@@ -7,7 +7,17 @@ def get_nft_transfers(start_block, end_block, api_key, contract_address, output)
     # Method for fetching NFT transfers using Alchemy's alchemy_getAssetTransfers endpoint
     print("Fetching NFT transfers...")
 
-    nft_transfers = pd.DataFrame(columns=["transaction_hash", "block_number", "asset_id","from_address","to_address","value","log_index"])
+    nft_transfers = pd.DataFrame(
+        columns=[
+            "transaction_hash",
+            "block_number",
+            "asset_id",
+            "from_address",
+            "to_address",
+            "value",
+            "log_index",
+        ]
+    )
     page_key = None
     process_active = True
 
@@ -23,13 +33,13 @@ def get_nft_transfers(start_block, end_block, api_key, contract_address, output)
                 "method": "alchemy_getAssetTransfers",
                 "params": [
                     {
-                    "fromBlock": hex(start_block),
-                    "toBlock": hex(end_block),
-                    "contractAddresses": [contract_address],
-                    "category": ["erc721", "erc1155"],
-                    "maxCount": "0x3e8"
+                        "fromBlock": hex(start_block),
+                        "toBlock": hex(end_block),
+                        "contractAddresses": [contract_address],
+                        "category": ["erc721", "erc1155"],
+                        "maxCount": "0x3e8",
                     }
-                ]
+                ],
             }
 
         else:
@@ -42,57 +52,70 @@ def get_nft_transfers(start_block, end_block, api_key, contract_address, output)
                 "method": "alchemy_getAssetTransfers",
                 "params": [
                     {
-                    "fromBlock": hex(start_block),
-                    "toBlock": hex(end_block),
-                    "contractAddresses": [contract_address],
-                    "category": ["erc721", "erc1155"],
-                    "maxCount": "0x3e8",
-                    "pageKey": page_key
+                        "fromBlock": hex(start_block),
+                        "toBlock": hex(end_block),
+                        "contractAddresses": [contract_address],
+                        "category": ["erc721", "erc1155"],
+                        "maxCount": "0x3e8",
+                        "pageKey": page_key,
                     }
-                ]
+                ],
             }
 
         # Sometimes requests can randomly fail. Retry 3 times before timing out.
         retries = 3
         for i in range(retries):
             try:
-                r = requests.post(alchemy_url, json = post_request_params)
+                r = requests.post(alchemy_url, json=post_request_params)
                 j = r.json()
 
                 transfers = j["result"]["transfers"]
                 for transfer in transfers:
                     try:
+                        nft_transfers_df = pd.DataFrame(
+                            columns=[
+                                "transaction_hash",
+                                "block_number",
+                                "asset_id",
+                                "from_address",
+                                "to_address",
+                                "value",
+                                "log_index",
+                            ]
+                        )
 
-                        nft_transfers_df = pd.DataFrame(columns=["transaction_hash", "block_number", "asset_id","from_address","to_address","value","log_index"])
-                        
                         transaction_hash = transfer["hash"]
-                        block_number = int(transfer["blockNum"],16)
+                        block_number = int(transfer["blockNum"], 16)
 
                         if transfer["category"] == "erc1155":
-                            asset_id = int(transfer["erc1155Metadata"][0]["tokenId"],16)
-                            value = int(transfer["erc1155Metadata"][0]["value"],16)
+                            asset_id = int(
+                                transfer["erc1155Metadata"][0]["tokenId"], 16
+                            )
+                            value = int(transfer["erc1155Metadata"][0]["value"], 16)
                         else:
-                            asset_id = int(transfer["erc721TokenId"],16)
+                            asset_id = int(transfer["erc721TokenId"], 16)
                             value = 1
 
                         from_address = transfer["from"]
                         to_address = transfer["to"]
-                        log_index_substr = len(transfer["uniqueId"])-71
+                        log_index_substr = len(transfer["uniqueId"]) - 71
                         log_index = transfer["uniqueId"][-log_index_substr:]
 
                         nft_transfers_dict = {
-                        "transaction_hash": [transaction_hash],
-                        "block_number": [block_number],
-                        "asset_id": [asset_id],
-                        "from_address": [from_address],
-                        "to_address": [to_address],
-                        "value": [value],
-                        "log_index": [log_index],
+                            "transaction_hash": [transaction_hash],
+                            "block_number": [block_number],
+                            "asset_id": [asset_id],
+                            "from_address": [from_address],
+                            "to_address": [to_address],
+                            "value": [value],
+                            "log_index": [log_index],
                         }
 
-                        nft_transfers_df =  pd.DataFrame(nft_transfers_dict)
-                        nft_transfers = pd.concat([nft_transfers, nft_transfers_df], ignore_index=True)
-                        
+                        nft_transfers_df = pd.DataFrame(nft_transfers_dict)
+                        nft_transfers = pd.concat(
+                            [nft_transfers, nft_transfers_df], ignore_index=True
+                        )
+
                     except:
                         continue
 
@@ -111,4 +134,3 @@ def get_nft_transfers(start_block, end_block, api_key, contract_address, output)
 
     # Output attributes data to CSV file
     nft_transfers.to_csv(output, index=False)
-

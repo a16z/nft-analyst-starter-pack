@@ -25,8 +25,11 @@ def export_update_logs(update_log_file, current_block_number=0):
 
     # If current block number is greater than last block number, append to the file
     if current_block_number > last_block_number:
-        new_dict = {"most_recent_block_number": [current_block_number], "last_updated": [last_date_updated]}
-        new_df =  pd.DataFrame(new_dict)
+        new_dict = {
+            "most_recent_block_number": [current_block_number],
+            "last_updated": [last_date_updated],
+        }
+        new_df = pd.DataFrame(new_dict)
         recent_block_df = pd.concat([recent_block_df, new_df], ignore_index=True)
 
         recent_block_df.sort_values(

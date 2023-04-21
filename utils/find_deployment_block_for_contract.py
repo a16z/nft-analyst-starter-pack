@@ -6,7 +6,7 @@ def find_deployment_block_for_contract(
 ):
     # Binary search for the block number in which a contract was deployed
     left = 0
-    right = web3_interface.eth.getBlock(
+    right = web3_interface.eth.get_block(
         "latest" if not latest_block else latest_block
     ).number
     while True:
@@ -14,7 +14,7 @@ def find_deployment_block_for_contract(
             return left
 
         to_check = (left + right) // 2
-        current_block = web3_interface.eth.getCode(
+        current_block = web3_interface.eth.get_code(
             contract_address, block_identifier=to_check
         )
         if len(current_block) == 0:

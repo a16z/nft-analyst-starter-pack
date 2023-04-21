@@ -47,7 +47,7 @@ def update_eth_prices(filename):
         price_of_eth = j["market_data"]["current_price"]["usd"]
 
         new_dict = {"date": [date_updated_ouput], "price_of_eth": [price_of_eth]}
-        new_df =  pd.DataFrame(new_dict)
+        new_df = pd.DataFrame(new_dict)
         eth_prices = pd.concat([eth_prices, new_df], ignore_index=True)
 
     eth_prices.sort_values(by="date", ascending=True, inplace=True)

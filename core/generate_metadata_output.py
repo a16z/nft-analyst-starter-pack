@@ -64,8 +64,12 @@ def generate_metadata_output(raw_attributes_file, token_ids_file, output):
     categories["trait_type"] = categories["trait_type"].str.replace(
         " ", "_", regex=True
     )
-    categories["trait_type"] = categories["trait_type"].str.replace("\(", "", regex=True)
-    categories["trait_type"] = categories["trait_type"].str.replace("\)", "", regex=True)
+    categories["trait_type"] = categories["trait_type"].str.replace(
+        "\(", "", regex=True
+    )
+    categories["trait_type"] = categories["trait_type"].str.replace(
+        "\)", "", regex=True
+    )
     category_rarity["trait_type"] = category_rarity["trait_type"].str.replace(
         " ", "_", regex=True
     )
@@ -84,7 +88,12 @@ def generate_metadata_output(raw_attributes_file, token_ids_file, output):
     for name in distinct_trait_types:
         df_dict[name] = pd.DataFrame()
         df_dict[name] = categories[(categories["trait_type"] == name)]
-        df_dict[name].columns = ["asset_id","value_"+name,"trait_type_"+name,"trait_rarity_score_"+name]
+        df_dict[name].columns = [
+            "asset_id",
+            "value_" + name,
+            "trait_type_" + name,
+            "trait_rarity_score_" + name,
+        ]
 
     for name in distinct_trait_types:
         nft_df = nft_df.merge(df_dict[name], on="asset_id", how="left")
