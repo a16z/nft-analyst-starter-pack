@@ -13,7 +13,7 @@ import contextlib
 import click
 import numpy as np
 import pandas as pd
-from ethereumetl.service.eth_service import EthService
+from utils.eth_service import EthService
 from web3 import Web3
 
 from core.generate_metadata_output import generate_metadata_output

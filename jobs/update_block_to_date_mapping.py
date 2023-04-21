@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
+from utils.eth_service import EthService
 
 import numpy as np
 import pandas as pd
-from ethereumetl.service.eth_service import EthService
 
 
 def update_block_to_date_mapping(filename, eth_service):

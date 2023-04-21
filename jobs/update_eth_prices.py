@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from time import sleep
 
-import httpx
+import requests
 import numpy as np
 import pandas as pd
 
@@ -30,7 +30,7 @@ def update_eth_prices(filename):
         date_updated_input = str(date_updated.strftime("%d-%m-%Y"))
         date_updated_ouput = str(date_updated.strftime("%Y-%m-%d"))
 
-        # Sleep for 5 seconds between API calls to avoid hitting rate limits
+        # Sleep for 10 seconds between API calls to avoid hitting rate limits
         sleep(10)
 
         # CoinGecko API Request
@@ -40,7 +40,8 @@ def update_eth_prices(filename):
         headers = {
             "Accept": "application/json",
         }
-        r = httpx.get(url, headers=headers)
+
+        r = requests.get(url, headers=headers, timeout=90)
         j = r.json()
 
         price_of_eth = j["market_data"]["current_price"]["usd"]
