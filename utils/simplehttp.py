@@ -1,6 +1,6 @@
 import http.server
-import socketserver
 import os
+import socketserver
 
 
 def launch_local_server():

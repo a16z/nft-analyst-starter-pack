@@ -1,6 +1,7 @@
+from time import sleep
+
 import pandas as pd
 import requests
-from time import sleep
 
 
 def get_nft_transfers(start_block, end_block, api_key, contract_address, output):
@@ -123,7 +124,7 @@ def get_nft_transfers(start_block, end_block, api_key, contract_address, output)
                     page_key = j["result"]["pageKey"]
                 except:
                     process_active = False
-            except KeyError as e:
+            except KeyError:
                 if i < retries - 1:
                     print("Alchemy request failed. Retrying request...")
                     sleep(5)

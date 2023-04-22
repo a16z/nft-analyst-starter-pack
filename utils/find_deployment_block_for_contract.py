@@ -1,6 +1,3 @@
-from web3 import Web3
-
-
 def find_deployment_block_for_contract(
     contract_address, web3_interface, latest_block=None
 ):

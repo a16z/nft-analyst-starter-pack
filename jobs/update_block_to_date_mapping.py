@@ -1,7 +1,5 @@
 from datetime import datetime, timedelta
-from utils.eth_service import EthService
 
-import numpy as np
 import pandas as pd
 
 

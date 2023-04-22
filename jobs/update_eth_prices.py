@@ -1,9 +1,8 @@
 from datetime import datetime, timedelta
 from time import sleep
 
-import requests
-import numpy as np
 import pandas as pd
+import requests
 
 
 def update_eth_prices(filename):

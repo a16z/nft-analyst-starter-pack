@@ -1,7 +1,8 @@
-import numpy as np
-import pandas as pd
 import os
 from datetime import datetime
+
+import numpy as np
+import pandas as pd
 
 
 def export_update_logs(update_log_file, current_block_number=0):

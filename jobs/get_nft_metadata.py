@@ -1,6 +1,7 @@
+from time import sleep
+
 import pandas as pd
 import requests
-from time import sleep
 
 
 def get_metadata_for_collection(api_key, contract_address, output):
@@ -56,7 +57,7 @@ def get_metadata_for_collection(api_key, contract_address, output):
                     start_token = int(j["nextToken"], 16)
                 except:
                     process_active = False
-            except KeyError as e:
+            except KeyError:
                 if i < retries - 1:
                     print("Alchemy request failed. Retrying request...")
                     sleep(5)
