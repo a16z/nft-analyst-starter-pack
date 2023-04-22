@@ -1,9 +1,9 @@
-import pandas as pd
 import os
+
+import pandas as pd
 
 
 def clean_up_outputs():
-
     # Find all csv files and organize by data type, contract, and run date
     csv_files = [f for f in os.listdir(".") if f.endswith(".csv")]
 

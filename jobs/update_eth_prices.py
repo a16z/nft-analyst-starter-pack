@@ -1,11 +1,8 @@
-import json
 from datetime import datetime, timedelta
 from time import sleep
 
-import ethereumetl
-import httpx
-import numpy as np
 import pandas as pd
+import requests
 
 
 def update_eth_prices(filename):
@@ -32,7 +29,7 @@ def update_eth_prices(filename):
         date_updated_input = str(date_updated.strftime("%d-%m-%Y"))
         date_updated_ouput = str(date_updated.strftime("%Y-%m-%d"))
 
-        # Sleep for 5 seconds between API calls to avoid hitting rate limits
+        # Sleep for 10 seconds between API calls to avoid hitting rate limits
         sleep(10)
 
         # CoinGecko API Request
@@ -42,15 +39,15 @@ def update_eth_prices(filename):
         headers = {
             "Accept": "application/json",
         }
-        r = httpx.get(url, headers=headers)
+
+        r = requests.get(url, headers=headers, timeout=90)
         j = r.json()
 
         price_of_eth = j["market_data"]["current_price"]["usd"]
 
-        eth_prices = eth_prices.append(
-            {"date": date_updated_ouput, "price_of_eth": price_of_eth},
-            ignore_index=True,
-        )
+        new_dict = {"date": [date_updated_ouput], "price_of_eth": [price_of_eth]}
+        new_df = pd.DataFrame(new_dict)
+        eth_prices = pd.concat([eth_prices, new_df], ignore_index=True)
 
     eth_prices.sort_values(by="date", ascending=True, inplace=True)
 

@@ -1,6 +1,9 @@
-import pandas as pd
 import os
-from utils.find_deployment_block_for_contract import find_deployment_block_for_contract
+
+import pandas as pd
+
+from utils.find_deployment_block_for_contract import \
+    find_deployment_block_for_contract
 
 
 def get_recent_block(update_log_file, contract_address, web3):
